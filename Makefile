@@ -2,6 +2,6 @@ CC = cl
 SRC =  main.cpp 
 
 all:
-	$(CC) $(SRC)
+	$(CC) /EHsc $(SRC)
 	main.exe
 

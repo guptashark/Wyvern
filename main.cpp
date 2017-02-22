@@ -6,6 +6,8 @@ using std::cin;
 using std::endl;
 using std::string;
 
+
+
 int main(int argc, char *argv[]) {
 
 	(void)argc;
@@ -13,15 +15,16 @@ int main(int argc, char *argv[]) {
 
 	string input;
 	string pattern ("[[:digit:]]");
+	string identifier ("[_[:alnum:]]+");
 
-	std::regex digit(pattern);
+	std::regex reg(identifier);
 
 	while(true) {
 
 		cin >> input;
 		if(!cin) return 0;
 		if(input == "q") return 0;
-		if(std::regex_match(input, digit)) {
+		if(std::regex_match(input, reg)) {
 
 			cout << "Matched" << endl;
 		} else {

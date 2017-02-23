@@ -1,5 +1,5 @@
 CC = cl
-SRC =  main.cpp 
+SRC =  main.cpp lexer.cpp
 
 all:
 	$(CC) /EHsc $(SRC)

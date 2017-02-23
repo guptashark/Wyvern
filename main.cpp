@@ -2,6 +2,10 @@
 #include <regex>
 #include <string>
 #include <vector>
+
+#include "lexer.h"
+
+
 using std::cout;
 using std::cin;
 using std::endl;
@@ -37,7 +41,7 @@ enum Class TokenSymbol {
 };
 */
 /* Starting of a Token Class. */
-
+/*
 class Token {
 	string lexeme;
 	string symbol;
@@ -52,6 +56,7 @@ Token::Token(string lexeme, string symbol): lexeme(lexeme), symbol(symbol) {}
 void Token::print() {
 	cout << lexeme << ": " << symbol << endl;
 }
+*/
 /* End of stuff for Token Class */
 
 
@@ -138,6 +143,7 @@ void print_token_vector(vector<Token> &tv) {
 	std::vector<Token>::iterator it;
 	for(it = tv.begin(); it != tv.end(); it++) {
 		it->print();
+		cout << endl;
 	}
 }
 
@@ -151,10 +157,10 @@ int main(int argc, char *argv[]) {
 
 	(void)argc;
 	(void)argv;
-
+/*
 	string input;
 	string digit ("[[:digit:]]");
-
+*/
 	/* equal, period, comma, lparen, rparen */
 	string single_symbols ( "(=)|(\\.)|(\\,)|(\\()|(\\))");
 	string identifier ("([_[:alnum:]]+)|");
@@ -166,7 +172,7 @@ int main(int argc, char *argv[]) {
 
 
 
-	std::regex reg(rgx_pattern);
+//	std::regex reg(rgx_pattern);
 /*
 	while(true) {
 		cout << "Enter a string to be matched: ";
@@ -182,6 +188,7 @@ int main(int argc, char *argv[]) {
 		std::cout << "suffix=[" << sm.suffix() << "]\n";
 	}	
 */
+	/*
 	while(true) {
 		getline(cin, input);
 		vector<Token> tv;
@@ -189,6 +196,31 @@ int main(int argc, char *argv[]) {
 		//print_str_vector(sv);
 		print_token_vector(tv);
 	}
+	*/
+
+	string array_of_symbols[8] = {
+		"IDENTIFIER",
+		"SPACE",
+		"EQUAL",
+		"PERIOD",
+		"COMMA",
+		"LPAREN",
+		"RPAREN"
+	};
+
+	vector<string> symbols;
+	for(int i =0; i < 7; i++) {
+		symbols.push_back(array_of_symbols[i]);
+	}
+
+	Lexer l(cin, rgx_pattern, symbols);
+	while(true) {
+		vector<Token> res = l.getSentence();
+		print_token_vector(res);
+	}
+
+
+
 	
 	return 0;
 }

@@ -66,11 +66,19 @@ int main(int argc, char *argv[]) {
 
 	string input;
 	string digit ("[[:digit:]]");
-	string identifier ("[_[:alnum:]]+");
-	string test_pattern("abc|def");
-	string test_pattern_2("([_[:alnum:]]+)|(=)|([[:space:]]+)");
 
-	std::regex reg(test_pattern_2);
+	/* equal, period, comma, lparen, rparen */
+	string single_symbols ( "(=)|(\\.)|(\\,)|(\\()|(\\))");
+	string identifier ("([_[:alnum:]]+)|");
+	string whitespace ("([[:space:]]+)|");
+
+	
+	string rgx_pattern = identifier + whitespace + single_symbols;
+	/*		([_[:alnum:]]+)|(=)|([[:sace:]]+)|(\\.)|(\\,)|(\\()|(\\))); */
+
+
+
+	std::regex reg(rgx_pattern);
 /*
 	while(true) {
 		cout << "Enter a string to be matched: ";
@@ -89,7 +97,7 @@ int main(int argc, char *argv[]) {
 	while(true) {
 		getline(cin, input);
 		vector<string> sv;
-		tokenize_input(sv, input, test_pattern_2);
+		tokenize_input(sv, input, rgx_pattern);
 		print_str_vector(sv);
 	}
 	

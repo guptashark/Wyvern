@@ -25,6 +25,87 @@ void single_pattern_loop(string pattern) {
 		}
 	}
 }
+/*
+enum Class TokenSymbol {
+	identifier, 
+	period,
+	lparen,
+	rparen,
+	comma, 
+	equal,
+	white_space
+};
+*/
+/* Starting of a Token Class. */
+
+class Token {
+	string lexeme;
+	string symbol;
+
+	public:
+	Token(string, string);
+	void print();
+};
+
+Token::Token(string lexeme, string symbol): lexeme(lexeme), symbol(symbol) {}
+
+void Token::print() {
+	cout << lexeme << ": " << symbol << endl;
+}
+/* End of stuff for Token Class */
+
+
+string map_sm_to_token_symbol(std::smatch &sm) {
+	std::smatch::iterator it;
+
+	string symbols[8] = {
+		"IDENTIFIER",
+		"SPACE",
+		"EQUAL",
+		"PERIOD",
+		"COMMA",
+		"LPAREN",
+		"RPAREN"
+	};
+
+	
+	int counter = 0;
+	for(unsigned it = 1; it <  sm.size(); it++) {
+		if((sm[it].str()).empty()) {
+			counter++;
+		} else {
+			break;
+		}
+	}
+
+	return symbols[counter];
+}
+
+
+
+
+void better_tokenize_input(vector<Token> &tv, string input, string rgx_pattern) {
+
+	std::regex reg(rgx_pattern);
+	string input_suffix = input;
+	string input_prefix;
+
+	string ret;
+
+	while(!input_suffix.empty() && input_prefix.empty()) {
+		std::smatch sm;
+		std::regex_search(input_suffix, sm, reg);
+		input_prefix = sm.prefix();
+		if(input_prefix.empty()) {
+			ret = map_sm_to_token_symbol(sm);
+			tv.push_back(Token(sm[0], ret));
+		}
+
+		input_suffix = sm.suffix();
+	}
+}
+
+
 
 /* TODO return a vector, or have one as a param? */
 void tokenize_input(vector<string> &sv, string input, string rgx_pattern) {
@@ -51,6 +132,13 @@ void print_str_vector(vector<string> &sv) {
 	}
 
 	cout << endl;
+}
+
+void print_token_vector(vector<Token> &tv) {
+	std::vector<Token>::iterator it;
+	for(it = tv.begin(); it != tv.end(); it++) {
+		it->print();
+	}
 }
 
 /* What we will try: 
@@ -96,9 +184,10 @@ int main(int argc, char *argv[]) {
 */
 	while(true) {
 		getline(cin, input);
-		vector<string> sv;
-		tokenize_input(sv, input, rgx_pattern);
-		print_str_vector(sv);
+		vector<Token> tv;
+		better_tokenize_input(tv, input, rgx_pattern);
+		//print_str_vector(sv);
+		print_token_vector(tv);
 	}
 	
 	return 0;

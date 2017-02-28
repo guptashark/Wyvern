@@ -29,6 +29,8 @@ class ASTTerimal: public ASTNode {
 
 class Parser {
 	private:
+		// just a dummy helper in situations.
+		std::string epsilon;
 		std::string start_symbol;
 		std::set<std::string> non_terminals;
 		std::set<std::string> terminals;

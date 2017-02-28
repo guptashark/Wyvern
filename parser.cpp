@@ -4,6 +4,7 @@
 
 #include "parser.h"
 
+using std::map;
 using std::pair;
 using std::cout;
 using std::endl;
@@ -32,7 +33,8 @@ Parser::Parser(string filename) {
 			terminals.insert(full_line);
 		}	
 	}
-	
+
+	// get the nonterminals. 
 	{
 		int num_non_terminals;
 		getline(cfg_file, full_line);
@@ -45,6 +47,15 @@ Parser::Parser(string filename) {
 		}
 	}
 
+	// Should only ever be one start symbol, 
+	// and this is where it will be, after nonterminals. 
+	// get it now. 
+	
+	{
+		getline(cfg_file, full_line);
+		std::stringstream ss(full_line);
+		ss >> start_symbol;
+	}
 	
 	// get the number of rules. 
 	{
@@ -69,7 +80,54 @@ Parser::Parser(string filename) {
 			rules.push_back(rule);	
 		}
 	}
-};
+	createFirstSets(start_symbol);
+}
+
+set<string> Parser::createFirstSets(string S) {
+
+	// This is going to be a nice recursive function. 
+	set<string>::iterator i;
+	// Case 1: S is a terminal. 
+	// 	Set first_sets[S] = set(S)
+	// 	return a reference to the created set. 	
+	i = terminals.find(S);
+	if(i != terminals.end()) {
+	       	set<string> ret;
+		ret.insert(S);
+		return ret;
+	}
+	
+	// Case 2: S is a nonterminal. 
+	// 	Get a production rule for the nonterminal S. 
+	// 	Get the first set of the first token in the rule. 
+	// 	Do the same for all production rules that expand S. 
+	i = non_terminals.find(S);	
+	std::vector<std::pair<std::string, std::vector<std::string>>>::iterator j;
+	set<string> ret;
+	set<string> full_set;
+
+	if(i != non_terminals.end()) {
+		for(j = rules.begin(); j != rules.end(); j++) {
+			if(j->first == S) {
+				ret = createFirstSets(*(j->second.begin()));
+				set<string>::iterator k;
+				for(k = ret.begin(); k != ret.end(); k++) {
+					full_set.insert(*k);
+				}
+			}
+		}
+		first_sets[S] = full_set;
+		return full_set;
+	}
+
+	// Dead zone, S is neither a terminal nor non terminal... 
+	cout << "WTF?" << endl;
+	set<string> huh;
+	return huh;
+}
+		
+
+	
 
 void Parser::printRules() {
 
@@ -82,5 +140,18 @@ void Parser::printRules() {
 			cout << *it << " ";
 		}
 		cout << endl;
+	}
+}
+
+void Parser::printFirstSets() {
+
+	map<string, set<string>>::iterator i;
+	for(i = first_sets.begin(); i != first_sets.end(); i++) {
+		cout << i->first << " -> [";
+		set<string>::iterator j;
+		for(j = i->second.begin(); j != i->second.end(); j++) {
+			cout << *j << ", ";
+		}
+		cout << "]" <<  endl;
 	}
 }

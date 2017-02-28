@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "lexer.h"
+#include "parser.h"
 
 
 using std::cout;
@@ -197,7 +198,7 @@ int main(int argc, char *argv[]) {
 		print_token_vector(tv);
 	}
 	*/
-
+/*
 	string array_of_symbols[8] = {
 		"IDENTIFIER",
 		"SPACE",
@@ -218,14 +219,12 @@ int main(int argc, char *argv[]) {
 		vector<Token> res = l.getSentence();
 		print_token_vector(res);
 	}
-
+*/
+	string cfg_file("test001.cfg");
+	Parser p(cfg_file);
+	p.printRules();
 
 
 	
 	return 0;
 }
-
-
-
-
-

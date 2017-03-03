@@ -174,7 +174,7 @@ void Parser::parseInput(vector<string> sentence) {
 
 	// iterator to rule that we need. 
 	vector<pair<string, vector<string>>>::iterator ri;
-
+	std::map<std::pair<std::string, std::string>, std::vector<std::pair<std::string, std::vector<std::string>>>::iterator>::iterator exists;
 	while(!input_stack.empty()) {
 
 		// Check if the top of the parse stack is a terminal
@@ -182,6 +182,12 @@ void Parser::parseInput(vector<string> sentence) {
 		// to be able to match it, and pop it off. If it is
 		// a terminal, but doesn't match, we reject input. 
 		set<string>::iterator si;
+
+		if(parse_stack.empty()) {
+			cout << "Does not match." << endl;
+			return;
+		}
+
 		si = terminals.find(parse_stack.top());
 
 		if(si != terminals.end()) {
@@ -190,10 +196,18 @@ void Parser::parseInput(vector<string> sentence) {
 				parse_stack.pop();
 			} else {
 				cout << "No match." << endl;
+				return;
 			}
 		} else {
 			// must be a non terminal. 
 			pair<string, string> key(parse_stack.top(), input_stack.top());
+			exists = rule_lookup.find(key);
+
+			if(exists == rule_lookup.end()) {
+				cout << "No match in lookup table." << endl;
+				return;
+			}
+			
 			ri = rule_lookup[key];
 			parse_stack.pop();
 

@@ -220,10 +220,11 @@ int main(int argc, char *argv[]) {
 		print_token_vector(res);
 	}
 */
-	string cfg_file("test004.cfg");
+	string cfg_file("test003.cfg");
 	Parser p(cfg_file);
 //	p.printRules();
-	p.printFirstSets();
+	//p.printFirstSets();
+	p.printLookupTable();
 	
 
 	

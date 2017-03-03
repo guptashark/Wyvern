@@ -27,6 +27,9 @@ class ASTTerimal: public ASTNode {
 // To build our table, We need to do a fair bit 
 // of iterating. 
 
+
+// TODO Parsing with follow sets. 
+// TODO (When using no epsilons in LL1, we don't need follow sets)
 class Parser {
 	private:
 		// just a dummy helper in situations.
@@ -35,17 +38,23 @@ class Parser {
 		std::set<std::string> non_terminals;
 		std::set<std::string> terminals;
 
-		std::map<std::pair<std::string, std::string>, int> rule_lookup;
+	//	std::map<std::pair<std::string, std::string>, int> rule_lookup;
+		std::map<std::pair<std::string, std::string>, std::vector<std::pair<std::string, std::vector<std::string>>>::iterator> rule_lookup;
 		std::vector<std::pair<std::string, std::vector<std::string>>> rules;
-
 		std::map<std::string, std::set<std::string>> first_sets;
+
+		// This is an internal printing function. 
+		void printRule(std::vector<std::pair<std::string, std::vector<std::string>>>::iterator);
+		// This is a function, internally used. It's recursive. 
 		std::set<std::string> createFirstSets(std::string S);
 
 	public:
 		Parser(std::string filename);
 		void parse(std::vector<Token> sentence);
 		void printRules();
+		void createLookupTable();
 		void printFirstSets();
+		void printLookupTable();
 	
 };
 

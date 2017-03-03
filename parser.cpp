@@ -88,6 +88,8 @@ Parser::Parser(string filename): epsilon("epsilon") {
 			createFirstSets(*i);
 		}
 	}
+
+	createLookupTable();
 }
 
 set<string> Parser::createFirstSets(string S) {
@@ -149,9 +151,62 @@ set<string> Parser::createFirstSets(string S) {
 	set<string> huh;
 	return huh;
 }
-		
 
+
+// TODO
+// Add in a check to make sure that
+// when we insert into the rule lookup, 
+// there isn't already something there. 
+// (Because then grammar isn't LL(1))
+void Parser::createLookupTable() {
+	// Go through the list of rules. 
+	// For each rule R: 
+	// 	load the production P. 
+	// 	Take the "first" of the first symbol in P. 
+	// 	For every symbol S in the set, 
+	// 		map(non_terminal, s) = R. 
+
+	// (rit == rules iterator) 	
+	std::vector<std::pair<std::string, std::vector<std::string>>>::iterator rit;
+	std::vector<string>::iterator first_sym;
+
+	// first set of the first symbol in the production. 
+	std::set<string> f_s;
+	std::set<string>::iterator si;
 	
+	for(rit = rules.begin(); rit != rules.end(); rit++) {
+		first_sym = (rit->second).begin();
+		f_s = first_sets[*first_sym];
+
+		for(si = f_s.begin(); si != f_s.end(); si++) {
+			std::pair<string, string> key(rit->first, *si);
+			rule_lookup[key] = rit;
+		}
+	}
+}
+
+void Parser::printLookupTable() {
+
+	map<pair<string, string>, vector<pair<string, vector<string>>>::iterator>::iterator it;
+	
+	for(it = rule_lookup.begin(); it != rule_lookup.end(); it++) {
+		cout << "(" << (it->first).first << ", " << (it->first).second << ") = ";
+		printRule(it->second);
+	}
+}
+
+void Parser::printRule(vector<pair<string, vector<string>>>::iterator i) {
+
+	vector<string>::iterator k;
+	cout << i->first << " -> ";
+
+	for(k = i->second.begin(); k != i->second.end(); k++) {
+		cout << *k << " ";
+	}
+
+	cout << endl;
+}
+
 
 void Parser::printRules() {
 

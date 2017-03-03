@@ -30,6 +30,8 @@ class ASTTerimal: public ASTNode {
 
 // TODO Parsing with follow sets. 
 // TODO (When using no epsilons in LL1, we don't need follow sets)
+// TODO We need typedefs!! Code is getting difficult to read! ie, 
+// 		what is: "std::map<std::pair<std::string, std::string>, std::vector<std::pair<std::string, std::vector<std::string>>>::iterator>" This madness??
 class Parser {
 	private:
 		// just a dummy helper in situations.
@@ -55,6 +57,9 @@ class Parser {
 		void createLookupTable();
 		void printFirstSets();
 		void printLookupTable();
+
+		// for testing right now... 
+		void parseInput(std::vector<std::string>);
 	
 };
 

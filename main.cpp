@@ -220,11 +220,20 @@ int main(int argc, char *argv[]) {
 		print_token_vector(res);
 	}
 */
-	string cfg_file("test003.cfg");
+	string cfg_file("test002.cfg");
 	Parser p(cfg_file);
 //	p.printRules();
 	//p.printFirstSets();
+
 	p.printLookupTable();
+
+	vector<string> vs;
+	vs.push_back("(");
+	vs.push_back("a");
+	vs.push_back("+");
+	vs.push_back("a");
+	//vs.push_back(")");
+	p.parseInput(vs);
 	
 
 	

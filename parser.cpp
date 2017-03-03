@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <stack>
 
 #include "parser.h"
 
@@ -11,6 +12,7 @@ using std::endl;
 using std::string;
 using std::vector;
 using std::set;
+using std::stack;
 
 // TODO function assumes proper input. 
 Parser::Parser(string filename): epsilon("epsilon") { 
@@ -151,6 +153,68 @@ set<string> Parser::createFirstSets(string S) {
 	set<string> huh;
 	return huh;
 }
+
+// TODO make this function a bit better, 
+// ANd have it out put a tree. 
+void Parser::parseInput(vector<string> sentence) {
+
+	// put all of the input into a stack. 
+	vector<string>::reverse_iterator it;
+	stack<string> input_stack;
+	for(it = sentence.rbegin(); it != sentence.rend(); it++) {
+		input_stack.push(*it);
+	}
+
+	// Now create a stack for our parse symbol logic. 
+	stack<string> parse_stack;
+	parse_stack.push(start_symbol);
+
+	// the symbol to match in our table. 
+	string next_input;
+
+	// iterator to rule that we need. 
+	vector<pair<string, vector<string>>>::iterator ri;
+
+	while(!input_stack.empty()) {
+
+		// Check if the top of the parse stack is a terminal
+		// or nonterminal. If it's a terminal, then we need
+		// to be able to match it, and pop it off. If it is
+		// a terminal, but doesn't match, we reject input. 
+		set<string>::iterator si;
+		si = terminals.find(parse_stack.top());
+
+		if(si != terminals.end()) {
+			if(*si == input_stack.top()) {
+				input_stack.pop();
+				parse_stack.pop();
+			} else {
+				cout << "No match." << endl;
+			}
+		} else {
+			// must be a non terminal. 
+			pair<string, string> key(parse_stack.top(), input_stack.top());
+			ri = rule_lookup[key];
+			parse_stack.pop();
+
+			vector<string>::reverse_iterator vsi;
+			for(vsi = ri->second.rbegin(); vsi != ri->second.rend(); vsi++) {
+				parse_stack.push(*vsi);
+			}
+		}
+	}
+
+	if(parse_stack.empty()) {
+		cout << "Accepted" << endl;
+	} else {
+		cout << "Rejected" << endl;
+	}
+}	
+
+
+
+
+
 
 
 // TODO

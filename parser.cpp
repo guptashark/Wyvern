@@ -174,7 +174,6 @@ void Parser::parseInput(vector<string> sentence) {
 
 	// iterator to rule that we need. 
 	vector<rule>::iterator ri;
-	lookup_table_iterator exists;
 	while(!input_stack.empty()) {
 
 		// Check if the top of the parse stack is a terminal
@@ -201,7 +200,7 @@ void Parser::parseInput(vector<string> sentence) {
 		} else {
 			// must be a non terminal. 
 			pair<string, string> key(parse_stack.top(), input_stack.top());
-			exists = rule_lookup.find(key);
+			auto exists = rule_lookup.find(key);
 
 			if(exists == rule_lookup.end()) {
 				cout << "No match in lookup table." << endl;
@@ -260,9 +259,7 @@ void Parser::createLookupTable() {
 
 void Parser::printLookupTable() {
 
-	lookup_table_iterator it;
-	
-	for(it = rule_lookup.begin(); it != rule_lookup.end(); it++) {
+	for(auto it = rule_lookup.begin(); it != rule_lookup.end(); it++) {
 		cout << "(" << (it->first).first << ", " << (it->first).second << ") = ";
 		printRule(it->second);
 	}
@@ -270,10 +267,9 @@ void Parser::printLookupTable() {
 
 void Parser::printRule(vector<rule>::iterator i) {
 
-	vector<string>::iterator k;
 	cout << i->first << " -> ";
 
-	for(k = i->second.begin(); k != i->second.end(); k++) {
+	for(auto k = i->second.begin(); k != i->second.end(); k++) {
 		cout << *k << " ";
 	}
 
@@ -282,13 +278,10 @@ void Parser::printRule(vector<rule>::iterator i) {
 
 
 void Parser::printRules() {
-
-	vector<rule>::iterator rules_it;
-	vector<string>::iterator it;
-
-	for(rules_it = rules.begin(); rules_it != rules.end(); rules_it++) {
-		cout << rules_it->first << ": ";
-		for(it = rules_it->second.begin(); it != rules_it->second.end(); it++) {
+	
+	for(auto r_it = rules.begin(); r_it != rules.end(); r_it++) {
+		cout << r_it->first << ": ";
+		for(auto it = r_it->second.begin(); it != r_it->second.end(); it++) {
 			cout << *it << " ";
 		}
 		cout << endl;
@@ -297,8 +290,7 @@ void Parser::printRules() {
 
 void Parser::printFirstSets() {
 
-	map<string, set<string>>::iterator i;
-	for(i = first_sets.begin(); i != first_sets.end(); i++) {
+	for(auto i = first_sets.begin(); i != first_sets.end(); i++) {
 		cout << i->first << " -> { ";
 		set<string>::iterator j;
 		for(j = i->second.begin(); j != i->second.end(); j++) {

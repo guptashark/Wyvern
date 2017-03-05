@@ -79,8 +79,8 @@ Parser::Parser(string filename): epsilon("epsilon") {
 			while(ss >> rule_token) {
 				production.push_back(rule_token);
 			}
-			std::pair<string, vector<string>> rule(non_terminal, production);
-			rules.push_back(rule);	
+			rule next_rule(non_terminal, production);
+			rules.push_back(next_rule);	
 		}
 	}
 
@@ -120,7 +120,7 @@ set<string> Parser::createFirstSets(string S) {
 	// 	Get the first set of the first token in the rule. 
 	// 	Do the same for all production rules that expand S. 
 	it = non_terminals.find(S);	
-	std::vector<std::pair<std::string, std::vector<std::string>>>::iterator i;
+	std::vector<rule>::iterator i;
 	vector<string>::iterator j;
 	set<string> ret;
 	set<string> full_set;
@@ -173,8 +173,8 @@ void Parser::parseInput(vector<string> sentence) {
 	string next_input;
 
 	// iterator to rule that we need. 
-	vector<pair<string, vector<string>>>::iterator ri;
-	std::map<std::pair<std::string, std::string>, std::vector<std::pair<std::string, std::vector<std::string>>>::iterator>::iterator exists;
+	vector<rule>::iterator ri;
+	lookup_table_iterator exists;
 	while(!input_stack.empty()) {
 
 		// Check if the top of the parse stack is a terminal
@@ -226,11 +226,6 @@ void Parser::parseInput(vector<string> sentence) {
 }	
 
 
-
-
-
-
-
 // TODO
 // Add in a check to make sure that
 // when we insert into the rule lookup, 
@@ -245,8 +240,8 @@ void Parser::createLookupTable() {
 	// 		map(non_terminal, s) = R. 
 
 	// (rit == rules iterator) 	
-	std::vector<std::pair<std::string, std::vector<std::string>>>::iterator rit;
-	std::vector<string>::iterator first_sym;
+	vector<rule>::iterator rit;
+	vector<string>::iterator first_sym;
 
 	// first set of the first symbol in the production. 
 	std::set<string> f_s;
@@ -265,7 +260,7 @@ void Parser::createLookupTable() {
 
 void Parser::printLookupTable() {
 
-	map<pair<string, string>, vector<pair<string, vector<string>>>::iterator>::iterator it;
+	lookup_table_iterator it;
 	
 	for(it = rule_lookup.begin(); it != rule_lookup.end(); it++) {
 		cout << "(" << (it->first).first << ", " << (it->first).second << ") = ";
@@ -273,7 +268,7 @@ void Parser::printLookupTable() {
 	}
 }
 
-void Parser::printRule(vector<pair<string, vector<string>>>::iterator i) {
+void Parser::printRule(vector<rule>::iterator i) {
 
 	vector<string>::iterator k;
 	cout << i->first << " -> ";
@@ -288,8 +283,8 @@ void Parser::printRule(vector<pair<string, vector<string>>>::iterator i) {
 
 void Parser::printRules() {
 
-	std::vector<pair<string, vector<string>>>::iterator rules_it;
-	std::vector<string>::iterator it;
+	vector<rule>::iterator rules_it;
+	vector<string>::iterator it;
 
 	for(rules_it = rules.begin(); rules_it != rules.end(); rules_it++) {
 		cout << rules_it->first << ": ";

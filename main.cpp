@@ -30,36 +30,6 @@ void single_pattern_loop(string pattern) {
 		}
 	}
 }
-/*
-enum Class TokenSymbol {
-	identifier, 
-	period,
-	lparen,
-	rparen,
-	comma, 
-	equal,
-	white_space
-};
-*/
-/* Starting of a Token Class. */
-/*
-class Token {
-	string lexeme;
-	string symbol;
-
-	public:
-	Token(string, string);
-	void print();
-};
-
-Token::Token(string lexeme, string symbol): lexeme(lexeme), symbol(symbol) {}
-
-void Token::print() {
-	cout << lexeme << ": " << symbol << endl;
-}
-*/
-/* End of stuff for Token Class */
-
 
 string map_sm_to_token_symbol(std::smatch &sm) {
 	std::smatch::iterator it;

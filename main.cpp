@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
 		print_token_vector(tv);
 	}
 	*/
-/*
+
 	string array_of_symbols[8] = {
 		"IDENTIFIER",
 		"SPACE",
@@ -184,19 +184,24 @@ int main(int argc, char *argv[]) {
 		symbols.push_back(array_of_symbols[i]);
 	}
 
+	string cfg_file("test010.cfg");
+	Parser p(cfg_file);
+
 	Lexer l(cin, rgx_pattern, symbols);
 	while(true) {
 		vector<Token> res = l.getSentence();
-		print_token_vector(res);
+		//print_token_vector(res);
+		p.parseTokens(res);
 	}
-*/
-	string cfg_file("test002.cfg");
-	Parser p(cfg_file);
+
+	//string cfg_file("test010.cfg");
+	//Parser p(cfg_file);
 //	p.printRules();
 	//p.printFirstSets();
 
-	p.printLookupTable();
+	//p.printLookupTable();
 
+/*	
 	vector<string> vs;
 	vs.push_back("(");
 	vs.push_back("a");
@@ -204,7 +209,7 @@ int main(int argc, char *argv[]) {
 	vs.push_back("a");
 	vs.push_back(")");
 	p.parseInput(vs);
-	
+*/	
 
 	
 	return 0;

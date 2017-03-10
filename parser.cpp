@@ -154,41 +154,86 @@ set<string> Parser::createFirstSets(string S) {
 	return huh;
 }
 
-// TODO make this function a bit better, 
-// ANd have it out put a tree. 
-void Parser::parseInput(vector<string> sentence) {
 
-	// put all of the input into a stack. 
-	vector<string>::reverse_iterator it;
-	stack<string> input_stack;
-	for(it = sentence.rbegin(); it != sentence.rend(); it++) {
+// parsing strings was the trial round
+// Now we do it with the output of the lexer. 
+void Parser::parseTokens(vector<Token> tokens) {
+	
+	vector<Token>::reverse_iterator it;
+	stack<Token> input_stack;
+	for(it = tokens.rbegin(); it != tokens.rend(); it++) {
 		input_stack.push(*it);
 	}
 
-	// Now create a stack for our parse symbol logic. 
 	stack<string> parse_stack;
 	parse_stack.push(start_symbol);
 
-	// the symbol to match in our table. 
 	string next_input;
 
+	vector<rule>::iterator ri;
+	while(!input_stack.empty()) {
+		if(parse_stack.empty()) {
+			cout << "Does not match." << endl;
+			return;
+		}
+		auto si = terminals.find(parse_stack.top());
+		if(si != terminals.end()) {
+			Token top = input_stack.top();
+			if(*si == top.getSymbol()) {
+				input_stack.pop();
+				parse_stack.pop();
+			} else {
+				cout << "No match." << endl;
+				return;
+			}
+		} else {
+			string top_string = input_stack.top().getSymbol();
+			pair<string, string> key(parse_stack.top(), top_string);
+			auto exists = rule_lookup.find(key);
+
+			if(exists == rule_lookup.end()) {
+				cout << "No match in lookup table." << endl;
+				return;
+			}
+
+			ri = rule_lookup[key];
+			parse_stack.pop();
+
+			vector<string>::reverse_iterator vsi;
+			for(vsi = ri->second.rbegin(); vsi != ri->second.rend(); vsi++) {
+				parse_stack.push(*vsi);
+			}
+		}
+	}
+	if(parse_stack.empty()) {
+		cout << "Accepted" << endl;
+	} else {
+		cout << "Rejected" << endl;
+	}
+}
+
+void Parser::parseInput(vector<string> sentence) {
+	stack<string> input_stack;
+	for(auto it = sentence.rbegin(); it != sentence.rend(); it++) {
+		input_stack.push(*it);
+	}
+	stack<string> parse_stack;
+	parse_stack.push(start_symbol);
+	// the symbol to match in our table. 
+	string next_input;
 	// iterator to rule that we need. 
 	vector<rule>::iterator ri;
 	while(!input_stack.empty()) {
-
 		// Check if the top of the parse stack is a terminal
 		// or nonterminal. If it's a terminal, then we need
 		// to be able to match it, and pop it off. If it is
 		// a terminal, but doesn't match, we reject input. 
-		set<string>::iterator si;
-
 		if(parse_stack.empty()) {
 			cout << "Does not match." << endl;
 			return;
 		}
 
-		si = terminals.find(parse_stack.top());
-
+		auto si = terminals.find(parse_stack.top());
 		if(si != terminals.end()) {
 			if(*si == input_stack.top()) {
 				input_stack.pop();

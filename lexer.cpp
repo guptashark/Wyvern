@@ -5,11 +5,13 @@ using std::cout;
 using std::string;
 using std::vector;
 
-
-
 /* Token functions */
 Token::Token(string lexeme, string symbol):
 	lexeme(lexeme), symbol(symbol) {}
+
+string Token::getSymbol() {
+	return symbol;
+}
 
 void Token::print() {
 	cout << lexeme << ": " << symbol;

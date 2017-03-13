@@ -1,0 +1,40 @@
+Goals: 
+	-Finish this project. 
+	-Get better at meeting women. 
+	-Get stronger. 
+	-Contact the OSAP agency about loan repayment call. 
+	-Set up a way for the computer to remind me to pay my loan. 
+	-Be more focused. 
+	-Play guitar... 
+	-Read and analyze the paper. 
+	-Make a lesson plan and homework for students. 	
+
+Making a parse tree:
+Parsing:
+	-Start with a node, and its on the stack. 
+	-we know the node will have children. 
+	-Depending on the rule used, those will be the children. 
+	-Push that node off, but keep a reference to it. 
+	-The things you push onto the stack are new nodes, for the rule used.
+	-For each node pushed on the stack, add it to the child of the pushed
+off symbol. 
+		-Because there's only a few different things you're doing: 
+			-Pop and replace with rule
+			-Match terminal and pop. 
+	-If we're popping and replacing, pop off a node, 	
+		and push on the nodes, and add to child list. 
+	-If we're matching, then that means the top of the stack is a node
+		that is a terminal. pop it off, everything is fine, 
+		since it is in a child list. 
+
+Printing the tree: 
+	-Print it like a list of lists:
+		([symbol, lexeme] (([child1_symbol, child1_lexeme] (etc))))
+	- Shouldn't be too hard, and should work. 
+	
+
+What needs to happen is I need to understand the whole virtual constructor
+thing, so that I can make this parse tree, without getting into trouble. 
+
+One way to bypass the problem is to just have a flag on the inside
+letting the object know if it's a terminal or not. 	

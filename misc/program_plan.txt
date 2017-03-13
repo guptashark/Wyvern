@@ -1,0 +1,57 @@
+# A database controller. 
+	A) CSV data - keep track of the files. 
+	B) ticker data
+	C) The machine learning model data for each ticker. 
+
+	EX1) identifiers that have been assigned to. 
+
+# Implementation details. 	
+	A) 	* A map that maps the ticker to it's name to data about the csv. 
+		* Created at initialization of the program. 
+		* Each of the csv's is modified so that they're updated to the
+		  current date. 
+		type(name) = string
+		type(data) = file_path. 
+	
+	B) 	* Several lists of tickers. 
+		* One list for all tickers we have.
+		* A mapping from date_range to a map from ticker
+		  symbol to the table and it's reciprocal. 	
+		* A mapping from ticker to date_ranges it has a table under.
+	
+	C) 	* map from ticker to date_ranges to model_type to model_data 
+
+	EX1) 	* A list of ids that associate each with a list of tickers. 
+		* A list of ids that associate each with a date_range
+		* A list of ids that associate each with a query date set. 
+
+# The main supporting options: 
+	1.) Be able to obtain CSV data. 
+	2.) Assign a set of tickers to a variable, or anonymous. 
+	2.1) Create a date, assign to variable or be anonymous. 
+	3.) Create tables for tickers for specified date ranges. 
+	4.) train a specific model on a set of tickers at a date_range. 
+	5.) Predict using a ticker, date_range, model and query_set. 
+	6.) Give accurasy on ticker, date_range, model and query_set. 
+
+NOTE: TickerAquire automatically creates a "TickerSet" obj for each ticker, 
+	So that if we do: AAPL.train(DateRange(2016, 2017)), this will work. 
+# Examples.
+
+	1.) 	>> TickerAquire(AAPL)
+		>> TickerAquire(AAPL, GOOG, MSFT)
+	2.) 	>> var = TickerSet(AAPL, GOOG, MSFT)
+		>> TickerSet(AAPL, GOOG, MSFT)
+	2.1)	>> d1 = DateRange(2016, 2017)
+		>> DateRange(2016, 2017)
+	3.) 	>> tables = var.make_tables(d1) 
+		>> TickerSet(AAPL, GOOG).make_tables(DateRange(2016, 2017)) 
+	4.) 	>> GaussianNB().fit(AAPL.make_tables(DateRange(2016, 2017)))
+		>> gauss_AAPL = GaussianNB().fit(tables)
+	5.) 	>> GaussianNB().fit(AAPL.make_tables(DateRange(...))).predict(query_dates)
+		>> gauss_AAPL.predict(query_dates)
+	6.) 	>> gauss_AAPL.score(query_dates)
+			
+	
+	
+

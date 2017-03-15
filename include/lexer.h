@@ -14,6 +14,7 @@ class Token {
 	public:
 	Token(std::string lexeme, std::string symbol);
 	std::string getSymbol();
+	std::string getLexeme();
 	void print();
 };
 

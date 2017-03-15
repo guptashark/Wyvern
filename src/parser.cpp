@@ -157,8 +157,14 @@ set<string> Parser::createFirstSets(string S) {
 
 // parsing strings was the trial round
 // Now we do it with the output of the lexer. 
-void Parser::parseTokens(vector<Token> tokens) {
+ParseTreeNode *Parser::parseTokens(vector<Token> tokens) {
 	
+	
+	// we'll end up returning this root.
+	ParseTreeNode *root = new ParseTreeNode(start_symbol);
+	ParseTreeNode *current = root;
+	stack<ParseTreeNode *> pt_nodes;
+	pt_nodes.push(root);
 	vector<Token>::reverse_iterator it;
 	stack<Token> input_stack;
 	for(it = tokens.rbegin(); it != tokens.rend(); it++) {
@@ -174,7 +180,8 @@ void Parser::parseTokens(vector<Token> tokens) {
 	while(!input_stack.empty()) {
 		if(parse_stack.empty()) {
 			cout << "Does not match." << endl;
-			return;
+			// broken
+			return root;
 		}
 		auto si = terminals.find(parse_stack.top());
 		if(si != terminals.end()) {
@@ -182,9 +189,14 @@ void Parser::parseTokens(vector<Token> tokens) {
 			if(*si == top.getSymbol()) {
 				input_stack.pop();
 				parse_stack.pop();
+				// Assume that this matches, since code is correct
+				ParseTreeNode *my_top = pt_nodes.top();
+				my_top->makeTerminal(top.getLexeme());
+				pt_nodes.pop();
 			} else {
 				cout << "No match." << endl;
-				return;
+				//broken
+				return root;
 			}
 		} else {
 			string top_string = input_stack.top().getSymbol();
@@ -193,15 +205,28 @@ void Parser::parseTokens(vector<Token> tokens) {
 
 			if(exists == rule_lookup.end()) {
 				cout << "No match in lookup table." << endl;
-				return;
+				return root;
 			}
 
 			ri = rule_lookup[key];
 			parse_stack.pop();
+			current = pt_nodes.top();
+			pt_nodes.pop();
+		
+			stack<ParseTreeNode *> helper;	
 
 			vector<string>::reverse_iterator vsi;
 			for(vsi = ri->second.rbegin(); vsi != ri->second.rend(); vsi++) {
 				parse_stack.push(*vsi);
+				ParseTreeNode *child = new ParseTreeNode(*vsi);
+				
+				helper.push(child);
+				pt_nodes.push(child);
+			}
+
+			while(!helper.empty()) {
+				current->addChild(helper.top());
+				helper.pop();
 			}
 		}
 	}
@@ -210,6 +235,8 @@ void Parser::parseTokens(vector<Token> tokens) {
 	} else {
 		cout << "Rejected" << endl;
 	}
+
+	return root;
 }
 
 void Parser::parseInput(vector<string> sentence) {

@@ -5,6 +5,7 @@
 
 #include "lexer.h"
 #include "parser.h"
+#include "parsetree.h"
 
 
 using std::cout;
@@ -43,6 +44,7 @@ int main(int argc, char *argv[]) {
 
 	
 
+	
 	string cfg_file("../cfg_files/test010.cfg");
 	Parser p(cfg_file);
 
@@ -50,7 +52,8 @@ int main(int argc, char *argv[]) {
 	while(true) {
 		vector<Token> res = l.getSentence();
 		//print_token_vector(res);
-		p.parseTokens(res);
+		ParseTreeNode *root = p.parseTokens(res);
+		root->print(0);
 	}
 	
 	return 0;

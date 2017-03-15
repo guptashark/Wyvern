@@ -6,6 +6,7 @@
 #include <vector>
 #include <set> 
 #include "lexer.h"
+#include "parsetree.h"
 
 // Build parse tree later. 
 // right now, just accept input. 
@@ -44,7 +45,7 @@ class Parser {
 		// for testing right now... 
 		void parseInput(std::vector<std::string>);
 
-		void parseTokens(std::vector<Token>);
+		ParseTreeNode *parseTokens(std::vector<Token>);
 };
 
 #endif

@@ -13,6 +13,10 @@ string Token::getSymbol() {
 	return symbol;
 }
 
+string Token::getLexeme() {
+	return lexeme;
+}
+
 void Token::print() {
 	cout << lexeme << ": " << symbol;
 }

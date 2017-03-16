@@ -158,8 +158,6 @@ set<string> Parser::createFirstSets(string S) {
 // parsing strings was the trial round
 // Now we do it with the output of the lexer. 
 ParseTreeNode *Parser::parseTokens(vector<Token> tokens) {
-	
-	
 	// we'll end up returning this root.
 	ParseTreeNode *root = new ParseTreeNode(start_symbol);
 	ParseTreeNode *current = root;
@@ -181,7 +179,8 @@ ParseTreeNode *Parser::parseTokens(vector<Token> tokens) {
 		if(parse_stack.empty()) {
 			cout << "Does not match." << endl;
 			// broken
-			return root;
+			delete root;
+			return NULL;
 		}
 		auto si = terminals.find(parse_stack.top());
 		if(si != terminals.end()) {
@@ -196,7 +195,8 @@ ParseTreeNode *Parser::parseTokens(vector<Token> tokens) {
 			} else {
 				cout << "No match." << endl;
 				//broken
-				return root;
+				delete root;
+				return NULL;
 			}
 		} else {
 			string top_string = input_stack.top().getSymbol();
@@ -205,7 +205,8 @@ ParseTreeNode *Parser::parseTokens(vector<Token> tokens) {
 
 			if(exists == rule_lookup.end()) {
 				cout << "No match in lookup table." << endl;
-				return root;
+				delete root;
+				return NULL;
 			}
 
 			ri = rule_lookup[key];
@@ -234,6 +235,8 @@ ParseTreeNode *Parser::parseTokens(vector<Token> tokens) {
 		cout << "Accepted" << endl;
 	} else {
 		cout << "Rejected" << endl;
+		delete root;
+		return NULL;
 	}
 
 	return root;

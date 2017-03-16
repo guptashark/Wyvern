@@ -53,7 +53,8 @@ int main(int argc, char *argv[]) {
 		vector<Token> res = l.getSentence();
 		//print_token_vector(res);
 		ParseTreeNode *root = p.parseTokens(res);
-		root->print(0);
+		if(root != NULL) root->print(0);
+		delete root;
 	}
 	
 	return 0;

@@ -42,6 +42,8 @@ class ParseTreeNode {
 		void addChild(ParseTreeNode *child);
 		void makeTerminal(std::string lex);
 		void print(int num_tabs);
+
+		~ParseTreeNode();
 };
 
 /*

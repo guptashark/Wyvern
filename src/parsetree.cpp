@@ -38,3 +38,9 @@ void ParseTreeNode::print(int num_tabs) {
 		(*i)->print(num_tabs + 1);
 	}
 }
+
+ParseTreeNode::~ParseTreeNode() {
+	for (auto i = children.begin(); i != children.end(); i++) {
+		delete *i;
+	}
+}

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <stack>
+#include <unordered_map>
 #include <regex>
 #include <string>
 #include <vector>
@@ -138,6 +140,241 @@ using std::vector;
 //
 // 3.) We can put all the DFA's together. Each final state will match 
 // a token name. 
+
+// DFA 
+// It'll match something, 
+// but then we have to have a lookahead to
+// make sure we don't match something else. 
+// So then what may happen is that we call: 
+//
+// get_next_char()
+// dfa_step()
+// if(dfa_fail()) {
+// 	call return function of last state. 
+// 	(should return the token name) 
+//
+// If we're trying to recognize a lot of stuff... 
+// Then make it a basic list of regexes: 
+//
+// r1 ret name(1)
+// r2 ret name(2)
+// r3 ret name(3)
+// ...
+// rn ret name(n)
+//
+// we essentially start multiple transitions
+// and keep going until we no longer can accept input. 
+// Then, backtrack, and find the last matched state
+// that is an accepting state. Move the forward pointer 
+// back the number of times we go back, and return the 
+// corresponding token name. 
+//
+// We might be running through a lot of states at the same time
+// we can monitor the program to make sure it isn't too many. 
+
+class DFAState {
+	// function to call if we finish in this state. 
+	//
+	protected:
+		unsigned int state_id;
+		std::unordered_map<char, DFAState *> transitions;	
+
+	public:
+		DFAState(unsigned int state_id);
+		// No destructor needed, since the DFA will call delete
+		// at the end along the vector of pointers. 
+	
+		// Both are handy to add our needed transitions. 	
+		void add_transition(char symbol, DFAState *destination);
+		void add_transition(std::string symbols, DFAState *destination);
+		unsigned int get_state_id();
+
+		DFAState *step(char symbol);
+};
+
+DFAState::DFAState(unsigned int state_id): state_id(state_id) {}
+
+void DFAState::add_transition(char symbol, DFAState *destination) {
+	// check if this transition already exists in the table. 
+	
+	auto it = transitions.find(symbol);
+	if(it != transitions.end()) {
+		// throw an exception 
+		// TODO actually throw the exception. 
+		cout << "Err: " << symbol << " already mapped to state: ";
+		cout << it->second->get_state_id();
+		return;
+	}
+
+	// do the check just to be sure
+	if(it == transitions.end()) {
+		std::pair<char, DFAState *> to_add(symbol, destination);
+		transitions.insert(to_add);
+	}
+
+}
+
+void DFAState::add_transition(std::string symbols, DFAState *destination) {
+
+	// Catch exceptions as they come along. 
+	for(auto it = symbols.begin(); it != symbols.end(); it++) {
+		add_transition(*it, destination);
+		// should catch exceptions here. 
+	}
+}
+
+unsigned int DFAState::get_state_id() {
+	return state_id;
+}
+
+// Might later change what happens when there is no next step... 
+// But it also makes sense to have a map from state id to functions
+// that way the dfa itself can hold all that for later processing
+// as compared to the children nodes... 
+// we can change this later with the sort of flexible structure
+// we currently have. 
+DFAState *DFAState::step(char symbol) {
+	auto it = transitions.find(symbol);
+	if(it == transitions.end()) {
+		return NULL;
+	} else {
+		return it->second;
+	}
+}
+/*
+class NFAState {
+	//
+};
+*/
+class DeterministicFA {
+
+	// vector of pointers to states. 
+	// should probably allow creation from NFA... 
+	// and more sophisticated creation techniques.
+	//
+	// the caller currently needs to know 
+	// which state they're on. 
+	// This is really only because we don't yet
+	// have an automated way of building the dfa
+	// otherwise we probably would have that in here. 
+	private:
+		unsigned int num_states;
+		std::vector<DFAState *> states;
+		DFAState *current;
+		DFAState *start;
+
+		std::unordered_map<unsigned int, bool> final_states;
+
+		DFAState *step(char c);
+	
+	public:
+		DeterministicFA();
+		void add_state();
+		void add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id);
+		void set_start(unsigned int state_id);
+
+		void set_final(unsigned int state_id);
+
+		// right now it returns void, 
+		// but will print out whatever is necessary to indicate what happens. 
+		// in use, it should return something useful. 
+		void run();
+};
+
+DeterministicFA::DeterministicFA(): num_states(0), current(NULL), start(NULL) {}
+
+DFAState *DeterministicFA::step(char c) {
+	if(current == NULL) {
+		return NULL;
+	}
+
+	current = current->step(c);
+	return current;
+}
+
+void DeterministicFA::add_state() {
+	DFAState *to_add = new DFAState(num_states);
+	states.push_back(to_add);
+	num_states++;
+}
+
+void DeterministicFA::add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id) {
+	states[from_state_id]->add_transition(symbol, states[to_state_id]);
+}
+
+void DeterministicFA::set_start(unsigned int state_id) {
+	// if the start has already been set, throw an error
+	// TODO actually throw the error. 
+	if(start == NULL) {
+		start = states[state_id];
+	} else {
+		cout << "Err, start state is already set." << endl;
+	}
+}	
+
+void DeterministicFA::set_final(unsigned int state_id) {
+
+	// the unordered map seems like a bad implementation
+	// for checking if a state is final... 
+	// TODO find a better way to check for if a stat is final.
+	std::pair<unsigned int, bool> to_set(state_id, true);
+	final_states.insert(to_set);
+}
+
+void DeterministicFA::run() {
+	current = start;
+	std::string seen_string;
+	std::stack<unsigned int> visited_states;
+
+	cout << "Please start." << endl;
+	
+	while(current != NULL) {
+		cout << "In state: " << current->get_state_id();
+		cout << endl;
+
+		visited_states.push(current->get_state_id());
+
+		char c;
+		cin >> c;
+		current = current->step(c);
+		seen_string.push_back(c);
+	}
+
+	// Since we're now at the end...
+	// see how much we need to push back to get to an accepting state. 
+	bool accepter_found = false;
+
+	while(!accepter_found) {
+		unsigned int top = visited_states.top();
+		auto iter = final_states.find(top);
+		if(iter == final_states.end()) {
+
+			visited_states.pop();
+			seen_string.pop_back();
+		} else {
+			accepter_found = true;
+		}
+	}
+
+	cout << "The accepted string is: " << seen_string << endl;
+}
+
+/*
+class NondeterministicFA {
+	//
+};
+
+*/
+
+
+
+
+
+
+
+
+
+
 class TokenAttribute {
 	std::string lexeme;
 };
@@ -159,24 +396,22 @@ class MyLexer {
 
 int main(int argc, char *argv[]) {
 
+	DeterministicFA dfa;
 
+	dfa.add_state();
+	dfa.add_state();
+	dfa.add_state();
 
+	dfa.set_start(0);
+	dfa.set_final(1);
 
+	dfa.add_transition(0, 'a', 1);
+	dfa.add_transition(1, 'b', 1);
+	dfa.add_transition(1, 'a', 2);
+	dfa.add_transition(2, 'a', 2);
+	dfa.add_transition(2, 'b' ,1);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	dfa.run();
 
 
 

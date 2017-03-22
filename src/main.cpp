@@ -10,12 +10,7 @@
 #include "parsetree.h"
 #include "deterministicfa.h"
 
-
-using std::cout;
-using std::cin;
-using std::endl;
-using std::string;
-using std::vector;
+using namespace std;
 
 // We're going to use ALSU Dragon book
 // To try and implement a better lexer
@@ -182,6 +177,335 @@ class NondeterministicFA {
 */
 
 
+// in order to make this well formed, 
+// We're going to try working with lists, 
+// because we can make them ordered. 
+
+class NFAState {
+	// function to call if we finish in this state. 
+	//
+	protected:
+		unsigned int state_id;
+
+		// We need a set of pointers.
+		// preferably ordered...
+		// because we want precedence matching? 
+		// right now, just a set. 
+		std::unordered_map<char, std::set<NFAState *>> transitions;
+
+		// need something for epsilon transitions. 
+		std::set<NFAState *> epsilon_transitions;
+		std::set<NFAState *> full_eps_trans;
+
+	public:
+		NFAState(unsigned int state_id);
+		// No destructor needed, since the DFA will call delete
+		// at the end along the vector of pointers. 
+	
+		// Both are handy to add our needed transitions. 	
+		void add_transition(char symbol, NFAState *destination);
+		void add_transition(std::string symbols, NFAState *destination);
+
+		// add an epsilon transition
+		void add_epsilon_transition(NFAState *destination);
+
+		unsigned int get_state_id();
+
+		// Issue, we're returning a copy... right? 
+		// TODO make sure this is ok. 
+		// Maybe use a reference? 
+		std::set<NFAState *> step(char symbol);
+
+		// We also need to get states on e transitions
+		std::set<NFAState *> epsilon_step();
+
+		void print_info();
+};
+
+
+
+class NonDeterministicFA {
+
+	// vector of pointers to states. 
+	// should probably allow creation from NFA... 
+	// and more sophisticated creation techniques.
+	//
+	// the caller currently needs to know 
+	// which state they're on. 
+	// This is really only because we don't yet
+	// have an automated way of building the dfa
+	// otherwise we probably would have that in here. 
+	private:
+		unsigned int num_states;
+		std::vector<NFAState *> states;
+		
+		// We need a set of current states...
+		std::set<NFAState *> current;
+		NFAState *start;
+
+		std::unordered_map<unsigned int, bool> final_states;
+
+		std::set<NFAState *> epsilon_step();
+		std::set<NFAState *> step(char c);
+	
+	public:
+		NonDeterministicFA();
+		void add_state();
+		void add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id);
+		void add_epsilon_transition(unsigned int from_state_id, unsigned int to_state_id);
+		void set_start(unsigned int state_id);
+
+		void set_final(unsigned int state_id);
+
+		// right now it returns void, 
+		// but will print out whatever is necessary to indicate what happens. 
+		// in use, it should return something useful. 
+		void print_info();
+		void run();
+};
+
+NonDeterministicFA::NonDeterministicFA(): num_states(0), start(NULL) {}
+
+void NonDeterministicFA::print_info() {
+
+	for(auto it = states.begin(); it != states.end(); it++) {
+
+		(*it)->print_info();
+	}
+}
+
+
+NFAState::NFAState(unsigned int state_id): state_id(state_id) {}
+
+void NFAState::add_transition(char symbol, NFAState *destination) {
+	// check if this transition already exists in the table. 
+
+	// Check if there's already a list there. 
+	// If there isn't put this item in the list. 
+	// Then insert the char and list into the map.
+	// If there is, then just add the destination to the list.
+	auto it = transitions.find(symbol);
+	if(it != transitions.end()) {
+		it->second.insert(destination);
+		return;
+	}
+
+	if(it == transitions.end()) {
+		// make a list. 
+		std::set<NFAState *> my_set;
+		my_set.insert(destination);
+		std::pair<char, set<NFAState *>> to_add(symbol, my_set);
+		transitions.insert(to_add);
+	}
+}
+
+void NFAState::add_transition(std::string symbols, NFAState *destination) {
+
+	// Catch exceptions as they come along. 
+	for(auto it = symbols.begin(); it != symbols.end(); it++) {
+		add_transition(*it, destination);
+		// should catch exceptions here. 
+	}
+}
+
+void NFAState::add_epsilon_transition(NFAState *destination) {
+	epsilon_transitions.insert(destination);
+}
+
+unsigned int NFAState::get_state_id() {
+	return state_id;
+}
+
+void NFAState::print_info() {
+
+	// for now just iterate through set. 
+	// later use a list. 
+
+	cout << "State id: " << state_id << endl;	
+	for(auto i = transitions.begin(); i != transitions.end(); i++) {
+		cout << i->first << ": ";
+		for(auto j = i->second.begin(); j != i->second.end(); j++) {
+			cout << (*j)->get_state_id() << " ";
+		}
+
+		cout << endl;
+	}
+
+	cout << "epsilon: ";
+	for(auto i = epsilon_transitions.begin(); i != epsilon_transitions.end(); i++) {
+		cout << (*i)->get_state_id() << " ";
+	}
+
+	cout << endl << endl;
+}
+
+
+/*
+// Might later change what happens when there is no next step... 
+// But it also makes sense to have a map from state id to functions
+// that way the dfa itself can hold all that for later processing
+// as compared to the children nodes... 
+// we can change this later with the sort of flexible structure
+// we currently have. 
+list<NFAState *> NFAState::step(char symbol) {
+	auto it = transitions.find(symbol);
+	if(it == transitions.end()) {
+		return NULL;
+	} else {
+		return it->second;
+	}
+}
+*/
+
+/*
+list<NFAState *> NFAState::epsilon_step() {
+	return epsilon_transitions;
+}
+*/
+
+/*
+set<NFAState *> NonDeterministicFA::step(char c) {
+	if(current.empty()) {
+		std::set<NFAState *> empty_list;
+		return empty_list;
+	}
+
+	current = current->step(c);
+	return current;
+}
+*/
+void NonDeterministicFA::add_state() {
+	NFAState *to_add = new NFAState(num_states);
+	states.push_back(to_add);
+	num_states++;
+}
+
+void NonDeterministicFA::add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id) {
+	states[from_state_id]->add_transition(symbol, states[to_state_id]);
+}
+
+void NonDeterministicFA::set_start(unsigned int state_id) {
+	// if the start has already been set, throw an error
+	// TODO actually throw the error. 
+	if(start == NULL) {
+		start = states[state_id];
+	} else {
+		cout << "Err, start state is already set." << endl;
+	}
+}	
+
+void NonDeterministicFA::set_final(unsigned int state_id) {
+
+	// the unordered map seems like a bad implementation
+	// for checking if a state is final... 
+	// TODO find a better way to check for if a stat is final.
+	std::pair<unsigned int, bool> to_set(state_id, true);
+	final_states.insert(to_set);
+}
+
+// We're facing an issue
+// When we are running
+// We check what state we're in
+// We then get every possible state we can be in by epsilon transition. 
+// 
+// Lets assume we have this set. Ie, for instance: 
+// A eps B
+// B eps C
+// A d D
+// B c E
+// A c F
+//
+// Then , if A is the start state, we would get the set: 
+// {A, B, C} as the ones we can possibly be in. 
+// Then, we apply the transition on symbol c. 
+// Our new set becomes: 
+// {F, E} 
+//
+// Since C can't go to anything on input symbol c
+//
+// And then we start our algorithm again from {E, F}
+// Add in all the states we could be in from eps transitions
+// and then read the next input character. 
+
+// How do we do the first part? Constructing the set
+// of all states we can get to with just eps-t
+//
+/*
+void NonDeterministicFA::run() {
+	current.push_back(start);
+	std::string seen_string;
+	std::stack<std::list<NFAState *>> visited_states;
+
+	cout << "Please start." << endl;
+	
+	while(!current.empty()) {
+		cout << "In states " ;
+		for(auto iter = current.begin(); iter != current.end(); iter++) {
+			cout << current->get_state_id() << " ";
+		}
+		cout << endl;
+
+		visited_states.push(current);
+
+		char c;
+		cin >> c;
+
+		// now we need to do shenanigans.
+		// build a set of states we can get to from e-transitions
+		// if we can get from A to B with e-t, then 
+		
+		current = current->step(c);
+		seen_string.push_back(c);
+	}
+
+	// Since we're now at the end...
+	// see how much we need to push back to get to an accepting state. 
+	bool accepter_found = false;
+
+	while(!accepter_found) {
+		unsigned int top = visited_states.top();
+		auto iter = final_states.find(top);
+		if(iter == final_states.end()) {
+
+			visited_states.pop();
+			seen_string.pop_back();
+		} else {
+			accepter_found = true;
+		}
+	}
+
+	cout << "The accepted string is: " << seen_string << endl;
+}
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class TokenAttribute {
 	std::string lexeme;
 };
@@ -203,7 +527,7 @@ class MyLexer {
 
 int main(int argc, char *argv[]) {
 
-	DeterministicFA dfa;
+	NonDeterministicFA dfa;
 
 	dfa.add_state();
 	dfa.add_state();
@@ -218,7 +542,9 @@ int main(int argc, char *argv[]) {
 	dfa.add_transition(2, 'a', 2);
 	dfa.add_transition(2, 'b' ,1);
 
-	dfa.run();
+	dfa.print_info();
+
+	//dfa.run();
 
 	return 0;
 }

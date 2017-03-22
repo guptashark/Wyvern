@@ -186,6 +186,8 @@ class NFAState {
 	//
 	protected:
 		unsigned int state_id;
+		std::string name;
+		bool is_named;
 
 		// We need a set of pointers.
 		// preferably ordered...
@@ -199,6 +201,7 @@ class NFAState {
 
 	public:
 		NFAState(unsigned int state_id);
+		NFAState(std::string name, unsigned int state_id);
 		// No destructor needed, since the DFA will call delete
 		// at the end along the vector of pointers. 
 	
@@ -220,9 +223,18 @@ class NFAState {
 		std::set<NFAState *> epsilon_step();
 
 		void print_info();
+		void print_identifiers();
 };
 
+NFAState::NFAState(string name, unsigned int state_id): state_id(state_id), name(name), is_named(true) {}
 
+void NFAState::print_identifiers() {
+	if(is_named) {
+		cout << "(" << name << ", " << state_id << ")";
+	} else {
+		cout << "(" << state_id << ")";
+	}
+}
 
 class NonDeterministicFA {
 
@@ -250,7 +262,7 @@ class NonDeterministicFA {
 	
 	public:
 		NonDeterministicFA();
-		void add_state();
+		void add_state(std::string name);
 		void add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id);
 		void add_epsilon_transition(unsigned int from_state_id, unsigned int to_state_id);
 		void set_start(unsigned int state_id);
@@ -275,7 +287,7 @@ void NonDeterministicFA::print_info() {
 }
 
 
-NFAState::NFAState(unsigned int state_id): state_id(state_id) {}
+NFAState::NFAState(unsigned int state_id): state_id(state_id), is_named(false) {}
 
 void NFAState::add_transition(char symbol, NFAState *destination) {
 	// check if this transition already exists in the table. 
@@ -320,12 +332,16 @@ void NFAState::print_info() {
 
 	// for now just iterate through set. 
 	// later use a list. 
+	if(is_named) {
+		cout << name << ", ";
+	}
 
 	cout << "State id: " << state_id << endl;	
 	for(auto i = transitions.begin(); i != transitions.end(); i++) {
 		cout << i->first << ": ";
 		for(auto j = i->second.begin(); j != i->second.end(); j++) {
-			cout << (*j)->get_state_id() << " ";
+			(*j)->print_identifiers();
+			cout << " ";
 		}
 
 		cout << endl;
@@ -374,8 +390,16 @@ set<NFAState *> NonDeterministicFA::step(char c) {
 	return current;
 }
 */
-void NonDeterministicFA::add_state() {
-	NFAState *to_add = new NFAState(num_states);
+void NonDeterministicFA::add_state(string state_name = string()) {
+
+	NFAState *to_add = NULL;
+
+	if(state_name.empty()) {
+		to_add = new NFAState(num_states);
+	} else {
+		to_add = new NFAState(state_name, num_states);
+	}
+
 	states.push_back(to_add);
 	num_states++;
 }
@@ -482,30 +506,6 @@ void NonDeterministicFA::run() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class TokenAttribute {
 	std::string lexeme;
 };
@@ -529,9 +529,9 @@ int main(int argc, char *argv[]) {
 
 	NonDeterministicFA dfa;
 
-	dfa.add_state();
-	dfa.add_state();
-	dfa.add_state();
+	dfa.add_state("start");
+	dfa.add_state("alpha");
+	dfa.add_state("beta");
 
 	dfa.set_start(0);
 	dfa.set_final(1);

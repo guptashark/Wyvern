@@ -189,6 +189,11 @@ class NFAState {
 		std::string name;
 		bool is_named;
 
+		// Sentinel value for helping speed up the algo
+		// So that we don't have to compute eps_close
+		// for the same state multiple times. 
+		bool computed_eps_closure;
+
 		// We need a set of pointers.
 		// preferably ordered...
 		// because we want precedence matching? 
@@ -196,8 +201,12 @@ class NFAState {
 		std::unordered_map<char, std::set<NFAState *>> transitions;
 
 		// need something for epsilon transitions. 
+		
+		// This one is for just basic transitions
 		std::set<NFAState *> epsilon_transitions;
-		std::set<NFAState *> full_eps_trans;
+
+		// This one is for the full closure that we find. 
+		std::set<NFAState *> eps_closure;
 
 	public:
 		NFAState(unsigned int state_id);
@@ -212,6 +221,8 @@ class NFAState {
 		// add an epsilon transition
 		void add_epsilon_transition(NFAState *destination);
 
+		std::set<NFAState *> get_eps_closure();
+
 		unsigned int get_state_id();
 
 		// Issue, we're returning a copy... right? 
@@ -222,11 +233,54 @@ class NFAState {
 		// We also need to get states on e transitions
 		std::set<NFAState *> epsilon_step();
 
+
+
 		void print_info();
 		void print_identifiers();
 };
 
-NFAState::NFAState(string name, unsigned int state_id): state_id(state_id), name(name), is_named(true) {}
+NFAState::NFAState(string name, unsigned int state_id): state_id(state_id), name(name), is_named(true), computed_eps_closure(false) {}
+
+// TODO
+// probably need better naming. 
+std::set<NFAState *> NFAState::get_eps_closure() {
+
+//	cout << "computing " << state_id << " e-close" << endl;
+	if(computed_eps_closure) {
+//		cout << "Already computed, returning " << state_id << " e-close" << endl;
+		return eps_closure;
+	}
+
+//	cout << "Not already computed, computing." << endl;
+
+	// otherwise, we need to construct it. 
+
+	set<NFAState *> eps_close(epsilon_transitions);
+
+	// loop is just for printing purposes: 
+/*
+	cout << "Already has: ";
+	for(auto i = eps_close.begin(); i != eps_close.end(); i++) {
+		cout << (*i)->get_state_id() << " ";
+	}
+	cout << "In e-close" << endl;
+*/
+
+	for(auto i = epsilon_transitions.begin(); i != epsilon_transitions.end(); i++) {
+		set<NFAState *> child_eps((*i)->get_eps_closure());
+		for(auto j = child_eps.begin(); j != child_eps.end(); j++) {
+//			cout << "Adding in e-close: " << (*j)->get_state_id() <<  endl;
+			eps_close.insert(*j);
+		}
+	}
+
+	eps_closure = eps_close;
+	computed_eps_closure = true;
+//	cout << "finally computed e-close for " << state_id << " returning." << endl;
+	return eps_closure;
+}
+	
+
 
 void NFAState::print_identifiers() {
 	if(is_named) {
@@ -273,10 +327,22 @@ class NonDeterministicFA {
 		// but will print out whatever is necessary to indicate what happens. 
 		// in use, it should return something useful. 
 		void print_info();
+		void compute_epsilon_closures();
 		void run();
 };
 
 NonDeterministicFA::NonDeterministicFA(): num_states(0), start(NULL) {}
+
+void NonDeterministicFA::compute_epsilon_closures() {
+
+	for(auto i = states.begin(); i != states.end(); i++) {
+		(*i)->get_eps_closure();
+	}
+}
+
+void NonDeterministicFA::add_epsilon_transition(unsigned int from_state_id, unsigned int to_state_id) {
+	states[from_state_id]->add_epsilon_transition(states[to_state_id]);
+}
 
 void NonDeterministicFA::print_info() {
 
@@ -287,7 +353,7 @@ void NonDeterministicFA::print_info() {
 }
 
 
-NFAState::NFAState(unsigned int state_id): state_id(state_id), is_named(false) {}
+NFAState::NFAState(unsigned int state_id): state_id(state_id), is_named(false), computed_eps_closure(false) {}
 
 void NFAState::add_transition(char symbol, NFAState *destination) {
 	// check if this transition already exists in the table. 
@@ -351,10 +417,15 @@ void NFAState::print_info() {
 	for(auto i = epsilon_transitions.begin(); i != epsilon_transitions.end(); i++) {
 		cout << (*i)->get_state_id() << " ";
 	}
+	cout << endl;
+
+	cout << "Epsilon closure: ";
+	for(auto i = eps_closure.begin(); i != eps_closure.end(); i++) {
+		cout << (*i)->get_state_id() << " ";
+	}
 
 	cout << endl << endl;
 }
-
 
 /*
 // Might later change what happens when there is no next step... 
@@ -527,22 +598,28 @@ class MyLexer {
 
 int main(int argc, char *argv[]) {
 
-	NonDeterministicFA dfa;
+	NonDeterministicFA nfa;
 
-	dfa.add_state("start");
-	dfa.add_state("alpha");
-	dfa.add_state("beta");
+	nfa.add_state("start");
+	nfa.add_state("alpha");
+	nfa.add_state("beta");
+	nfa.add_state("gamma");
 
-	dfa.set_start(0);
-	dfa.set_final(1);
+	nfa.set_start(0);
+	nfa.set_final(1);
 
-	dfa.add_transition(0, 'a', 1);
-	dfa.add_transition(1, 'b', 1);
-	dfa.add_transition(1, 'a', 2);
-	dfa.add_transition(2, 'a', 2);
-	dfa.add_transition(2, 'b' ,1);
+	nfa.add_transition(0, 'a', 1);
+	nfa.add_transition(1, 'b', 1);
+	nfa.add_transition(1, 'a', 2);
+	nfa.add_transition(2, 'a', 2);
+	nfa.add_transition(2, 'b' ,1);
 
-	dfa.print_info();
+	nfa.add_epsilon_transition(1, 2);
+	nfa.add_epsilon_transition(1, 3);
+	nfa.add_epsilon_transition(2, 0);
+
+	nfa.compute_epsilon_closures();
+	nfa.print_info();
 
 	//dfa.run();
 

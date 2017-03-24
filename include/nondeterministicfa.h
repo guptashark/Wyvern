@@ -58,8 +58,6 @@ class NFAState {
 		// We also need to get states on e transitions
 		std::set<NFAState *> epsilon_step();
 
-
-
 		void print_info();
 		void print_identifiers();
 };

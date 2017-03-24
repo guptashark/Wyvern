@@ -6,42 +6,23 @@ using namespace std;
 
 NFAState::NFAState(string name, unsigned int state_id): state_id(state_id), name(name), is_named(true), computed_eps_closure(false) {}
 
-// TODO
-// probably need better naming. 
 std::set<NFAState *> NFAState::get_eps_closure() {
 
-//	cout << "computing " << state_id << " e-close" << endl;
 	if(computed_eps_closure) {
-//		cout << "Already computed, returning " << state_id << " e-close" << endl;
 		return eps_closure;
 	}
 
-//	cout << "Not already computed, computing." << endl;
-
-	// otherwise, we need to construct it. 
-
 	set<NFAState *> eps_close(epsilon_transitions);
-
-	// loop is just for printing purposes: 
-/*
-	cout << "Already has: ";
-	for(auto i = eps_close.begin(); i != eps_close.end(); i++) {
-		cout << (*i)->get_state_id() << " ";
-	}
-	cout << "In e-close" << endl;
-*/
 
 	for(auto i = epsilon_transitions.begin(); i != epsilon_transitions.end(); i++) {
 		set<NFAState *> child_eps((*i)->get_eps_closure());
 		for(auto j = child_eps.begin(); j != child_eps.end(); j++) {
-//			cout << "Adding in e-close: " << (*j)->get_state_id() <<  endl;
 			eps_close.insert(*j);
 		}
 	}
 
 	eps_closure = eps_close;
 	computed_eps_closure = true;
-//	cout << "finally computed e-close for " << state_id << " returning." << endl;
 	return eps_closure;
 }
 	
@@ -170,24 +151,6 @@ set<NFAState *> NFAState::step(char symbol) {
 	}
 }
 
-
-/*
-list<NFAState *> NFAState::epsilon_step() {
-	return epsilon_transitions;
-}
-*/
-
-/*
-set<NFAState *> NonDeterministicFA::step(char c) {
-	if(current.empty()) {
-		std::set<NFAState *> empty_list;
-		return empty_list;
-	}
-
-	current = current->step(c);
-	return current;
-}
-*/
 void NonDeterministicFA::add_state(string state_name = string()) {
 
 	NFAState *to_add = NULL;
@@ -224,36 +187,6 @@ void NonDeterministicFA::set_final(unsigned int state_id) {
 	std::pair<unsigned int, bool> to_set(state_id, true);
 	final_states.insert(to_set);
 }
-
-// We're facing an issue
-// When we are running
-// We check what state we're in
-// We then get every possible state we can be in by epsilon transition. 
-// 
-// Lets assume we have this set. Ie, for instance: 
-// A eps B
-// B eps C
-// A d D
-// B c E
-// A c F
-//
-// Then , if A is the start state, we would get the set: 
-// {A, B, C} as the ones we can possibly be in. 
-// Then, we apply the transition on symbol c. 
-// Our new set becomes: 
-// {F, E} 
-//
-// Since C can't go to anything on input symbol c
-//
-// And then we start our algorithm again from {E, F}
-// Add in all the states we could be in from eps transitions
-// and then read the next input character. 
-
-// How do we do the first part? Constructing the set
-// of all states we can get to with just eps-t
-//
-
-
 
 void NonDeterministicFA::run() {
 	current.insert(start);
@@ -326,7 +259,4 @@ void NonDeterministicFA::run() {
 	cout << "Fell off automaton" << endl;
 	cout << "The accepted string is: " << seen_string << endl;
 }
-
-
-
 

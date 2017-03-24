@@ -1,3 +1,4 @@
+#include <stack> 
 #include <iostream>
 #include "nondeterministicfa.h"
 
@@ -157,15 +158,18 @@ void NFAState::print_info() {
 // as compared to the children nodes... 
 // we can change this later with the sort of flexible structure
 // we currently have. 
-list<NFAState *> NFAState::step(char symbol) {
+*/
+set<NFAState *> NFAState::step(char symbol) {
+	std::set<NFAState *> ret;
 	auto it = transitions.find(symbol);
 	if(it == transitions.end()) {
-		return NULL;
+		return ret;
 	} else {
-		return it->second;
+		ret = it->second;
+		return ret;
 	}
 }
-*/
+
 
 /*
 list<NFAState *> NFAState::epsilon_step() {
@@ -248,22 +252,39 @@ void NonDeterministicFA::set_final(unsigned int state_id) {
 // How do we do the first part? Constructing the set
 // of all states we can get to with just eps-t
 //
-/*
+
+
+
 void NonDeterministicFA::run() {
-	current.push_back(start);
+	current.insert(start);
 	std::string seen_string;
-	std::stack<std::list<NFAState *>> visited_states;
+	std::stack<std::set<NFAState *>> visited_states;
 
 	cout << "Please start." << endl;
 	
 	while(!current.empty()) {
 		cout << "In states " ;
-		for(auto iter = current.begin(); iter != current.end(); iter++) {
-			cout << current->get_state_id() << " ";
+
+		std::set<NFAState *> X;
+		// build our epsilon closure of current. 
+		// reassign to current. 
+		for(auto i = current.begin(); i != current.end(); i++) {
+			X.insert(*i);
+			std::set<NFAState *> ret;
+
+			ret = (*i)->get_eps_closure();
+			for(auto j = ret.begin(); j != ret.end(); j++) {
+				X.insert(*j);
+			}
+		}
+		// get the eps_closures, X. 
+		
+		for(auto iter = X.begin(); iter != X.end(); iter++) {
+			cout << (*iter)->get_state_id() << " ";
 		}
 		cout << endl;
 
-		visited_states.push(current);
+		//visited_states.insert(current);
 
 		char c;
 		cin >> c;
@@ -271,15 +292,25 @@ void NonDeterministicFA::run() {
 		// now we need to do shenanigans.
 		// build a set of states we can get to from e-transitions
 		// if we can get from A to B with e-t, then 
-		
-		current = current->step(c);
+	
+		std::set<NFAState *> Y;
+		for(auto i = X.begin(); i != X.end(); i++) {
+			std::set<NFAState *> ret;
+			ret = (*i)->step(c);
+			for(auto j = ret.begin(); j != ret.end(); j++) {
+				Y.insert(*j);
+			}
+		}
+
+		current = Y;
 		seen_string.push_back(c);
+		visited_states.push(current);
 	}
 
 	// Since we're now at the end...
 	// see how much we need to push back to get to an accepting state. 
 	bool accepter_found = false;
-
+/*
 	while(!accepter_found) {
 		unsigned int top = visited_states.top();
 		auto iter = final_states.find(top);
@@ -291,10 +322,11 @@ void NonDeterministicFA::run() {
 			accepter_found = true;
 		}
 	}
-
+*/
+	cout << "Fell off automaton" << endl;
 	cout << "The accepted string is: " << seen_string << endl;
 }
 
-*/
+
 
 

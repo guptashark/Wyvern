@@ -16,7 +16,7 @@ using namespace std;
 int main(int argc, char *argv[]) {
 
 	NonDeterministicFA nfa;
-
+/*
 	nfa.add_state("start");
 	nfa.add_state("alpha");
 	nfa.add_state("beta");
@@ -38,8 +38,36 @@ int main(int argc, char *argv[]) {
 	nfa.compute_epsilon_closures();
 	nfa.print_info();
 
-	//dfa.run();
+	nfa.run();
+*/
+	nfa.add_state("start"); // 0
+	nfa.add_state("for-start");
+	nfa.add_state("for-f");
+	nfa.add_state("for-fo");
+	nfa.add_state("for-for");
 
+	nfa.add_state("foal-start"); // 5
+	nfa.add_state("foal-f");
+	nfa.add_state("foal-fo");
+	nfa.add_state("foal-foa");
+	nfa.add_state("foal-foal");
+
+	nfa.add_epsilon_transition(0, 1);
+	nfa.add_transition(1, 'f', 2);
+	nfa.add_transition(2, 'o', 3);
+	nfa.add_transition(3, 'r', 4);
+
+	nfa.add_epsilon_transition(0, 5);
+	nfa.add_transition(5, 'f', 6);
+	nfa.add_transition(6, 'o', 7);
+	nfa.add_transition(7, 'a', 8);
+	nfa.add_transition(8, 'l', 9);
+
+	nfa.set_start(0);
+
+	nfa.compute_epsilon_closures();
+	nfa.print_info();
+	nfa.run();
 	return 0;
 }
 

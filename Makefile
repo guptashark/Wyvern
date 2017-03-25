@@ -33,9 +33,12 @@ obj/deterministicfa.obj: "src/deterministicfa.cpp"
 	$(CC) $(CPPFLAGS) $**
 
 clean:
-	del main.obj
-	del lexer.obj
-	del parser.obj
-	del main.exe
+	del obj\main.obj
+	del obj\lexer.obj
+	del obj\parser.obj
+	del obj\nondeterministicfa.obj
+	del obj\deterministicfa.obj
+	del obj\parsetree.obj
+	del bin\wyvern.exe
 
 

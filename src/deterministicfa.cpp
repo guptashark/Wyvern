@@ -4,7 +4,9 @@
 
 using namespace std;
 
-DFAState::DFAState(unsigned int state_id): state_id(state_id) {}
+// constructors
+DFAState::DFAState(unsigned int state_id): state_id(state_id), name("") {}
+DFAState::DFAState(unsigned int state_id, string name): state_id(state_id), name(name) {}
 
 void DFAState::add_transition(char symbol, DFAState *destination) {
 	// check if this transition already exists in the table. 
@@ -39,6 +41,10 @@ unsigned int DFAState::get_state_id() {
 	return state_id;
 }
 
+string DFAState::get_state_name() {
+	return name;
+}
+
 // Might later change what happens when there is no next step... 
 // But it also makes sense to have a map from state id to functions
 // that way the dfa itself can hold all that for later processing
@@ -53,11 +59,6 @@ DFAState *DFAState::step(char symbol) {
 		return it->second;
 	}
 }
-/*
-class NFAState {
-	//
-};
-*/
 
 DeterministicFA::DeterministicFA(): num_states(0), current(NULL), start(NULL) {}
 
@@ -76,8 +77,22 @@ void DeterministicFA::add_state() {
 	num_states++;
 }
 
+void DeterministicFA::add_state(string name) {
+	DFAState *to_add = new DFAState(num_states, name);
+	states.push_back(to_add);
+	
+	// should do error checking in case state with that name already exists. 
+	pair<string, DFAState *> to_insert(name, to_add);
+	named_states.insert(to_insert);
+	num_states++;
+}
+
 void DeterministicFA::add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id) {
 	states[from_state_id]->add_transition(symbol, states[to_state_id]);
+}
+
+void DeterministicFA::add_transition(string from_state_name, char symbol, string to_state_name) {
+	named_states[from_state_name]->add_transition(symbol, named_states[to_state_name]);
 }
 
 void DeterministicFA::set_start(unsigned int state_id) {
@@ -90,6 +105,15 @@ void DeterministicFA::set_start(unsigned int state_id) {
 	}
 }	
 
+void DeterministicFA::set_start(string state_name) {
+	// error checking... 
+	if(start == NULL) {
+		start = named_states[state_name];
+	} else {
+		cout << "Err, start state is already set." << endl;
+	}
+}
+
 void DeterministicFA::set_final(unsigned int state_id) {
 
 	// the unordered map seems like a bad implementation
@@ -97,6 +121,12 @@ void DeterministicFA::set_final(unsigned int state_id) {
 	// TODO find a better way to check for if a stat is final.
 	std::pair<unsigned int, bool> to_set(state_id, true);
 	final_states.insert(to_set);
+}
+
+void DeterministicFA::set_final(string state_name) {
+	
+	unsigned int state_id = named_states[state_name]->get_state_id();
+	set_final(state_id);
 }
 
 void DeterministicFA::run() {
@@ -108,6 +138,7 @@ void DeterministicFA::run() {
 	
 	while(current != NULL) {
 		cout << "In state: " << current->get_state_id();
+		cout << " - " << current->get_state_name();
 		cout << endl;
 
 		visited_states.push(current->get_state_id());

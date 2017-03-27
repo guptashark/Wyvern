@@ -14,7 +14,7 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-
+/*
 	NonDeterministicFA nfa;
 
 	nfa.add_state("start"); // 0
@@ -46,6 +46,20 @@ int main(int argc, char *argv[]) {
 	nfa.print_info();
 	nfa.run();
 	return 0;
+*/
+	DeterministicFA dfa;
+	dfa.add_state("start");
+	dfa.add_state("q1");
+	dfa.add_state("q2");
+	dfa.add_state("final");
+	dfa.add_transition("start", '1', "q1");
+	dfa.add_transition("q1", '0', "q2");
+	dfa.add_transition("q2", '1', "q2");
+	dfa.add_transition("q2", '0', "final");
+
+	dfa.set_start("start");
+	dfa.set_final("final");
+	dfa.run();
 }
 
 

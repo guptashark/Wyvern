@@ -49,6 +49,7 @@ int main(int argc, char *argv[]) {
 */
 	DeterministicFA dfa;
 	dfa.add_state("start");
+	dfa.add_state("start");
 	dfa.add_state("q1");
 	dfa.add_state("q2");
 	dfa.add_state("final");

@@ -88,6 +88,14 @@ void DeterministicFA::add_state() {
 }
 
 void DeterministicFA::add_state(string name) {
+
+	// check if the name already exists
+	auto iter = named_states.find(name); 
+	if(iter != named_states.end()) {
+		cout << "Error, state name: \"" << name << "\" already exits." << endl;
+	}
+
+
 	DFAState *to_add = new DFAState(num_states, name);
 	states.push_back(to_add);
 	
@@ -133,8 +141,6 @@ void DeterministicFA::set_final(unsigned int state_id) {
 	states[state_id]->set_as_final();
 }
 
-
-
 void DeterministicFA::set_final(string state_name) {
 	
 	unsigned int state_id = named_states[state_name]->get_state_id();
@@ -164,7 +170,6 @@ void DeterministicFA::run() {
 	// Since we're now at the end...
 	// see how much we need to push back to get to an accepting state. 
 	bool accepter_found = false;
-
 
 	while(!accepter_found && !visited_states.empty()) {
 		DFAState *top = visited_states.top();

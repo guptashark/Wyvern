@@ -12,7 +12,8 @@ class DFAState {
 	protected:
 		unsigned int state_id;
 		std::string name;
-		std::unordered_map<char, DFAState *> transitions;	
+		std::unordered_map<char, DFAState *> transitions;
+		bool is_final;
 
 	public:
 		DFAState(unsigned int state_id);
@@ -27,6 +28,8 @@ class DFAState {
 		std::string get_state_name();
 
 		DFAState *step(char symbol);
+		void set_as_final();
+		bool get_is_final();
 };
 
 class DeterministicFA {
@@ -52,7 +55,7 @@ class DeterministicFA {
 		DFAState *current;
 		DFAState *start;
 
-		std::unordered_map<unsigned int, bool> final_states;
+		//std::unordered_map<unsigned int, bool> final_states;
 
 		DFAState *step(char c);
 	

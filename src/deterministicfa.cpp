@@ -5,8 +5,8 @@
 using namespace std;
 
 // constructors
-DFAState::DFAState(unsigned int state_id): state_id(state_id), name("") {}
-DFAState::DFAState(unsigned int state_id, string name): state_id(state_id), name(name) {}
+DFAState::DFAState(unsigned int state_id): state_id(state_id), name(""), is_final(false) {}
+DFAState::DFAState(unsigned int state_id, string name): state_id(state_id), name(name), is_final(false) {}
 
 void DFAState::add_transition(char symbol, DFAState *destination) {
 	// check if this transition already exists in the table. 
@@ -26,6 +26,16 @@ void DFAState::add_transition(char symbol, DFAState *destination) {
 		transitions.insert(to_add);
 	}
 
+}
+
+bool DFAState::get_is_final() {
+	return is_final;
+}
+
+void DFAState::set_as_final() {
+	// TODO
+	// throw exception when already set as final. 
+	is_final = true;
 }
 
 void DFAState::add_transition(std::string symbols, DFAState *destination) {
@@ -119,9 +129,11 @@ void DeterministicFA::set_final(unsigned int state_id) {
 	// the unordered map seems like a bad implementation
 	// for checking if a state is final... 
 	// TODO find a better way to check for if a stat is final.
-	std::pair<unsigned int, bool> to_set(state_id, true);
-	final_states.insert(to_set);
+	
+	states[state_id]->set_as_final();
 }
+
+
 
 void DeterministicFA::set_final(string state_name) {
 	
@@ -132,7 +144,7 @@ void DeterministicFA::set_final(string state_name) {
 void DeterministicFA::run() {
 	current = start;
 	std::string seen_string;
-	std::stack<unsigned int> visited_states;
+	std::stack<DFAState *> visited_states;
 
 	cout << "Please start." << endl;
 	
@@ -141,7 +153,7 @@ void DeterministicFA::run() {
 		cout << " - " << current->get_state_name();
 		cout << endl;
 
-		visited_states.push(current->get_state_id());
+		visited_states.push(current);
 
 		char c;
 		cin >> c;
@@ -155,10 +167,9 @@ void DeterministicFA::run() {
 
 
 	while(!accepter_found && !visited_states.empty()) {
-		unsigned int top = visited_states.top();
-		auto iter = final_states.find(top);
-		if(iter == final_states.end()) {
+		DFAState *top = visited_states.top();
 
+		if(!top->get_is_final()) {
 			visited_states.pop();
 			seen_string.pop_back();
 		} else {
@@ -172,4 +183,3 @@ void DeterministicFA::run() {
 		cout << "The accepted string is: " << seen_string << endl;
 	}
 }
-

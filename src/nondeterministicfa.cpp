@@ -4,7 +4,7 @@
 
 using namespace std;
 
-NFAState::NFAState(string name, unsigned int state_id): state_id(state_id), name(name), is_named(true), computed_eps_closure(false) {}
+NFAState::NFAState(string name, unsigned int state_id): state_id(state_id), name(name), is_named(true), is_final(false), computed_eps_closure(false)  {}
 
 std::set<NFAState *> NFAState::get_eps_closure() {
 
@@ -26,7 +26,13 @@ std::set<NFAState *> NFAState::get_eps_closure() {
 	return eps_closure;
 }
 	
+void NFAState::set_as_final() {
+	is_final = true;
+}
 
+bool NFAState::get_is_final() {
+	return is_final;
+}
 
 void NFAState::print_identifiers() {
 	if(is_named) {
@@ -108,6 +114,7 @@ void NFAState::print_info() {
 	}
 
 	cout << "State id: " << state_id << endl;	
+	if(is_final) cout << "is final" << endl;
 	for(auto i = transitions.begin(); i != transitions.end(); i++) {
 		cout << i->first << ": ";
 		for(auto j = i->second.begin(); j != i->second.end(); j++) {
@@ -184,8 +191,10 @@ void NonDeterministicFA::set_final(unsigned int state_id) {
 	// the unordered map seems like a bad implementation
 	// for checking if a state is final... 
 	// TODO find a better way to check for if a stat is final.
-	std::pair<unsigned int, bool> to_set(state_id, true);
-	final_states.insert(to_set);
+	// find the state to set as final. 
+	states[state_id]->set_as_final();	
+//	std::pair<unsigned int, bool> to_set(state_id, true);
+//	final_states.insert(to_set);
 }
 
 void NonDeterministicFA::run() {

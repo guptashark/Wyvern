@@ -13,6 +13,7 @@ class NFAState {
 		unsigned int state_id;
 		std::string name;
 		bool is_named;
+		bool is_final;
 
 		// Sentinel value for helping speed up the algo
 		// So that we don't have to compute eps_close
@@ -55,6 +56,9 @@ class NFAState {
 		// Maybe use a reference? 
 		std::set<NFAState *> step(char symbol);
 
+		void set_as_final();
+		bool get_is_final();
+
 		// We also need to get states on e transitions
 		std::set<NFAState *> epsilon_step();
 
@@ -83,7 +87,7 @@ class NonDeterministicFA {
 		std::set<NFAState *> current;
 		NFAState *start;
 
-		std::unordered_map<unsigned int, bool> final_states;
+		//std::unordered_map<unsigned int, bool> final_states;
 
 		std::set<NFAState *> epsilon_step();
 		std::set<NFAState *> step(char c);

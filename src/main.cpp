@@ -14,7 +14,7 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-/*
+
 	NonDeterministicFA nfa;
 
 	nfa.add_state("start"); // 0
@@ -41,12 +41,16 @@ int main(int argc, char *argv[]) {
 	nfa.add_transition(8, 'l', 9);
 
 	nfa.set_start(0);
+	nfa.set_final(9);
+	nfa.set_final(4);
 
 	nfa.compute_epsilon_closures();
 	nfa.print_info();
 	nfa.run();
 	return 0;
-*/
+}
+
+/*
 	DeterministicFA dfa;
 	dfa.add_state("start");
 	dfa.add_state("start");
@@ -64,7 +68,7 @@ int main(int argc, char *argv[]) {
 }
 
 
-/*
+
 	(void)argc;
 	(void)argv;
 

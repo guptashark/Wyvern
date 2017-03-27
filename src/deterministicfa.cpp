@@ -153,7 +153,8 @@ void DeterministicFA::run() {
 	// see how much we need to push back to get to an accepting state. 
 	bool accepter_found = false;
 
-	while(!accepter_found) {
+
+	while(!accepter_found && !visited_states.empty()) {
 		unsigned int top = visited_states.top();
 		auto iter = final_states.find(top);
 		if(iter == final_states.end()) {
@@ -165,6 +166,10 @@ void DeterministicFA::run() {
 		}
 	}
 
-	cout << "The accepted string is: " << seen_string << endl;
+	if(visited_states.empty()) {
+		cout << "No final state was ever reached." << endl;
+	} else {
+		cout << "The accepted string is: " << seen_string << endl;
+	}
 }
 

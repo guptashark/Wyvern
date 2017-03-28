@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+#include "deterministicfa.h"
+
 class NFAState {
 	// function to call if we finish in this state. 
 	//
@@ -67,7 +69,6 @@ class NFAState {
 };
 
 
-
 class NonDeterministicFA {
 
 	// vector of pointers to states. 
@@ -107,6 +108,9 @@ class NonDeterministicFA {
 		void print_info();
 		void compute_epsilon_closures();
 		void run();
+
+		std::string state_set_to_string(std::set<NFAState *> &s);
+		DeterministicFA convert_to_dfa();
 };
 
 

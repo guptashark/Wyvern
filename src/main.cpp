@@ -46,7 +46,10 @@ int main(int argc, char *argv[]) {
 
 	nfa.compute_epsilon_closures();
 	nfa.print_info();
+
 	nfa.run();
+	//nfa.convert_to_dfa();
+
 	return 0;
 }
 

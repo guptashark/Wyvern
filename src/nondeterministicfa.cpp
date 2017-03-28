@@ -1,5 +1,7 @@
 #include <stack> 
 #include <iostream>
+#include <list> 
+#include <sstream>
 #include "nondeterministicfa.h"
 
 using namespace std;
@@ -7,6 +9,9 @@ using namespace std;
 NFAState::NFAState(string name, unsigned int state_id): state_id(state_id), name(name), is_named(true), is_final(false), computed_eps_closure(false)  {}
 
 std::set<NFAState *> NFAState::get_eps_closure() {
+
+	// patch: 
+	// The element itself must be in the epsilon closure! 
 
 	if(computed_eps_closure) {
 		return eps_closure;
@@ -20,6 +25,9 @@ std::set<NFAState *> NFAState::get_eps_closure() {
 			eps_close.insert(*j);
 		}
 	}
+
+	// the patch itself.
+	eps_close.insert(this);
 
 	eps_closure = eps_close;
 	computed_eps_closure = true;
@@ -197,6 +205,65 @@ void NonDeterministicFA::set_final(unsigned int state_id) {
 //	final_states.insert(to_set);
 }
 
+string NonDeterministicFA::state_set_to_string(set<NFAState *> &s) {
+
+	// probably shouldn't even get here... 
+	if(s.empty()) {
+		string result;
+		return result;
+	}
+	// first get all the items into a linked list. 
+	// sort the list. 
+	// turn the list into a string. 
+	list<unsigned int> l;
+	for(auto i = s.begin(); i != s.end(); i++) {
+		l.push_back((*i)->get_state_id());
+	}
+
+	l.sort();
+
+	// use stringstreams to turn numbers into strings... 
+	stringstream ss;
+	ss << "{";
+	for(auto i = l.begin(); i != l.end(); i++) {
+		ss << *i << ", ";
+	}
+
+	// now read this all into a string. 
+	string result = ss.str();
+	// lop off the last little bit. 
+	// (We'll only ever get here if s isn't empty, so at least one state exists in the set. 
+	result.pop_back();
+	result.pop_back();
+	result.push_back('}');
+	return result;
+}
+
+DeterministicFA NonDeterministicFA::convert_to_dfa() {
+	// create the dfa as we go. 
+	
+	// make the set of states that is the start set of the dfa. 
+	// turn that set into one DFAState. 
+	// add the dfa state into the dfa. 
+	// also add the dfa state to a queue of marked dfa states. 
+	// move on a symbol. 
+	// generate the set of states we get from moving on the symbol. 
+	// turn that set into a dfa state. 
+	// check and see if that specific state already exists in the dfa
+ 	DeterministicFA d;
+
+	// create the start state for the dfa...
+	set<NFAState *> T(start->get_eps_closure());
+	// turn the set into a string. 
+	string state_name(state_set_to_string(T));
+	d.add_state(state_name);
+
+	cout << state_name << endl;
+
+	return d;	
+
+}
+
 void NonDeterministicFA::run() {
 	current.insert(start);
 	std::string seen_string;
@@ -211,7 +278,6 @@ void NonDeterministicFA::run() {
 		// build our epsilon closure of current. 
 		// reassign to current. 
 		for(auto i = current.begin(); i != current.end(); i++) {
-			X.insert(*i);
 			std::set<NFAState *> ret;
 
 			ret = (*i)->get_eps_closure();
@@ -268,4 +334,3 @@ void NonDeterministicFA::run() {
 	cout << "Fell off automaton" << endl;
 	cout << "The accepted string is: " << seen_string << endl;
 }
-

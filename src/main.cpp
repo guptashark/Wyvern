@@ -35,14 +35,15 @@ int main(int argc, char *argv[]) {
 
 	nfa.add_transition("identifier-begin", lower, "identifier-end");
 	nfa.add_transition("identifier-end", lower, "identifier-end");
-	nfa.set_final("identifier-end");
+	nfa.set_final("identifier-end", "identifier");
+
 
 	// need this as a delimiter
 	nfa.add_state("ws-begin");
 	nfa.add_state("ws-end");
 	nfa.add_epsilon_transition("start", "ws-begin");
 	nfa.add_transition("ws-begin", '\n', "ws-end");
-	nfa.set_final("ws-end");
+	nfa.set_final("ws-end", "whitespace");
 
 	nfa.set_source_reader(&sr);
 

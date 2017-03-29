@@ -37,6 +37,16 @@ class NFAState {
 		// This one is for the full closure that we find. 
 		std::set<NFAState *> eps_closure;
 
+		// if this is a final state, we want to return something. 
+		// later on, this will be a function that is called
+		// but right now, have it return a string, denoting maybe like, 
+		// token name. 
+		// then the run of the nfa itself will return something like a 
+		// pair. but right now, lets get the functionality in place. 
+		// later, instead of returning a string, we can probably 
+		// install a function or do something more complex. 
+		std::string accepting_return_val;
+
 	public:
 		NFAState(unsigned int state_id);
 		NFAState(std::string name, unsigned int state_id);
@@ -59,12 +69,23 @@ class NFAState {
 		// Maybe use a reference? 
 		std::set<NFAState *> step(char symbol);
 
+		// the second one is here temporarily
+		// so that the state has control over what happens
+		// when we land in it. 	
 		void set_as_final();
+		void set_as_final(std::string arv); // (arv == accepting return val) 
+
+		
 		bool get_is_final();
+
+		// when we know that this state is a final state, 
+		// we want to get it's arv (accepting return val) 
+		std::string get_arv();
 
 		// We also need to get states on e transitions
 		std::set<NFAState *> epsilon_step();
 
+		// for debugging stuff
 		void print_info();
 		void print_identifiers();
 };
@@ -82,23 +103,21 @@ class NonDeterministicFA {
 	// have an automated way of building the dfa
 	// otherwise we probably would have that in here. 
 	private:
-		unsigned int num_states;
 		std::vector<NFAState *> states;
 		
 		// We need a set of current states...
 		//std::set<NFAState *> current;
 		NFAState *start;
-
-		//std::unordered_map<unsigned int, bool> final_states;
-
-		std::set<NFAState *> epsilon_step();
-		std::set<NFAState *> step(char c);
-		std::map<std::string, NFAState *> named_states;
-
+		
 		// The attatched source reader. 
 		// A source reader is created for each file to read. 
 		SourceReader *sr;
-	
+
+		//std::set<NFAState *> epsilon_step();
+		//std::set<NFAState *> step(char c);
+		std::map<std::string, NFAState *> named_states;
+
+		
 	public:
 		NonDeterministicFA();
 
@@ -119,6 +138,9 @@ class NonDeterministicFA {
 
 		void set_final(unsigned int state_id);
 		void set_final(std::string state_name);
+
+		// this one here is to install into the state what we should get back when we accept on that state. 
+		void set_final(std::string state_name, std::string arv);
 
 		// right now it returns void, 
 		// but will print out whatever is necessary to indicate what happens. 

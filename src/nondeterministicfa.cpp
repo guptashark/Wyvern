@@ -44,6 +44,15 @@ void NFAState::set_as_final() {
 	is_final = true;
 }
 
+void NFAState::set_as_final(string arv) {
+	is_final = true;
+	accepting_return_val = arv;
+}
+
+string NFAState::get_arv() {
+	return accepting_return_val;
+}
+
 bool NFAState::get_is_final() {
 	return is_final;
 }
@@ -81,7 +90,7 @@ NonDeterministicFA::NonDeterministicFA(list<string> los): start(NULL), sr(NULL) 
 			s_name.push_back(*j);
 			current_len++;
 			if(current_len == len) {
-				set_final(next_state);
+				set_final(next_state, "keyword-" + s);
 			}
 		}
 
@@ -262,6 +271,10 @@ void NonDeterministicFA::set_final(string state_name) {
 	named_states[state_name]->set_as_final();
 }
 
+void NonDeterministicFA::set_final(string state_name, string arv) {
+	named_states[state_name]->set_as_final(arv);
+}
+
 string NonDeterministicFA::state_set_to_string(set<NFAState *> &s) {
 
 	// probably shouldn't even get here... 
@@ -411,6 +424,11 @@ void NonDeterministicFA::run() {
 		}
 	}
 
-	cout << "Fell off automaton" << endl;
-	cout << "The accepted string is: " << seen_string << endl;
+	if(acceptor == NULL) {
+		cout << "acceptor state is null..." << endl;
+
+	}
+
+	cout << "The token name is: " << acceptor->get_arv() << endl;
+	cout << "The accepted string is: \"" << seen_string << "\"" << endl;
 }

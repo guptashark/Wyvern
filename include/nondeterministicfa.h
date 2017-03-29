@@ -86,7 +86,7 @@ class NonDeterministicFA {
 		std::vector<NFAState *> states;
 		
 		// We need a set of current states...
-		std::set<NFAState *> current;
+		//std::set<NFAState *> current;
 		NFAState *start;
 
 		//std::unordered_map<unsigned int, bool> final_states;

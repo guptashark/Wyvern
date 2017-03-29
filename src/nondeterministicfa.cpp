@@ -327,6 +327,7 @@ DeterministicFA NonDeterministicFA::convert_to_dfa() {
 // if attatched to a source reader, 
 // read from it instead of from stdin.
 void NonDeterministicFA::run() {
+	std::set<NFAState *> current;
 	current.insert(start);
 	std::string seen_string;
 	std::stack<std::set<NFAState *>> visited_states;

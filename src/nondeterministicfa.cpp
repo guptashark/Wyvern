@@ -9,7 +9,6 @@ using namespace std;
 NFAState::NFAState(string name, unsigned int state_id): 
 	state_id(state_id), 
 	name(name), 
-	is_named(true), 
 	is_final(false), 
 	computed_eps_closure(false)
 {}
@@ -49,7 +48,7 @@ bool NFAState::get_is_final() {
 }
 
 void NFAState::print_identifiers() {
-	if(is_named) {
+	if(!name.empty()) {
 		cout << "(" << name << ", " << state_id << ")";
 	} else {
 		cout << "(" << state_id << ")";
@@ -82,7 +81,7 @@ void NonDeterministicFA::print_info() {
 }
 
 
-NFAState::NFAState(unsigned int state_id): state_id(state_id), is_named(false), computed_eps_closure(false) {}
+NFAState::NFAState(unsigned int state_id): state_id(state_id), computed_eps_closure(false) {}
 
 void NFAState::add_transition(char symbol, NFAState *destination) {
 	// check if this transition already exists in the table. 
@@ -127,7 +126,7 @@ void NFAState::print_info() {
 
 	// for now just iterate through set. 
 	// later use a list. 
-	if(is_named) {
+	if(!name.empty()) {
 		cout << name << ", ";
 	}
 

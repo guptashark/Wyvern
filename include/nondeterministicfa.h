@@ -15,7 +15,6 @@ class NFAState {
 	protected:
 		unsigned int state_id;
 		std::string name;
-		bool is_named;
 		bool is_final;
 
 		// Sentinel value for helping speed up the algo

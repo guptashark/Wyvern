@@ -319,7 +319,7 @@ void NonDeterministicFA::run() {
 	// see how much we need to push back to get to an accepting state. 
 	bool accepter_found = false;
 	NFAState *acceptor = NULL;
-	while(!accepter_found) {
+	while(!accepter_found && !visited_states.empty()) {
 		// get the top set of states. 
 		std::set<NFAState *> top = visited_states.top();
 		// check if any of them are final states. 

@@ -6,7 +6,13 @@
 
 using namespace std;
 
-NFAState::NFAState(string name, unsigned int state_id): state_id(state_id), name(name), is_named(true), is_final(false), computed_eps_closure(false)  {}
+NFAState::NFAState(string name, unsigned int state_id): 
+	state_id(state_id), 
+	name(name), 
+	is_named(true), 
+	is_final(false), 
+	computed_eps_closure(false)
+{}
 
 std::set<NFAState *> NFAState::get_eps_closure() {
 
@@ -50,7 +56,11 @@ void NFAState::print_identifiers() {
 	}
 }
 
-NonDeterministicFA::NonDeterministicFA(): num_states(0), start(NULL) {}
+NonDeterministicFA::NonDeterministicFA(): num_states(0), start(NULL), sr(NULL) {}
+
+void NonDeterministicFA::set_source_reader(SourceReader *sr_p) {
+	sr = sr_p;
+}
 
 void NonDeterministicFA::compute_epsilon_closures() {
 
@@ -264,6 +274,10 @@ DeterministicFA NonDeterministicFA::convert_to_dfa() {
 
 }
 
+
+// newish behavior
+// if attatched to a source reader, 
+// read from it instead of from stdin.
 void NonDeterministicFA::run() {
 	current.insert(start);
 	std::string seen_string;
@@ -295,7 +309,11 @@ void NonDeterministicFA::run() {
 		//visited_states.insert(current);
 
 		char c;
-		cin >> c;
+		if(sr == NULL) {
+			cin >> c;
+		} else {
+			c = sr->next_char();
+		}
 
 		// now we need to do shenanigans.
 		// build a set of states we can get to from e-transitions

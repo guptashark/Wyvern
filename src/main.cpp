@@ -16,7 +16,7 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
 
-//	SourceReader("test.wvn");
+	SourceReader sr("test.wvn");
 
 	NonDeterministicFA nfa;
 
@@ -46,6 +46,8 @@ int main(int argc, char *argv[]) {
 	nfa.set_start(0);
 	nfa.set_final(9);
 	nfa.set_final(4);
+
+	nfa.set_source_reader(&sr);
 
 	nfa.compute_epsilon_closures();
 	nfa.print_info();

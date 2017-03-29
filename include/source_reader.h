@@ -8,6 +8,8 @@ class SourceReader {
 
 	private:
 		std::fstream source;
+		std::string stored_str;
+		std::string::iterator it;
 
 
 	public:

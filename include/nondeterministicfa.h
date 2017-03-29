@@ -7,6 +7,7 @@
 #include <string>
 
 #include "deterministicfa.h"
+#include "source_reader.h"
 
 class NFAState {
 	// function to call if we finish in this state. 
@@ -92,6 +93,10 @@ class NonDeterministicFA {
 
 		std::set<NFAState *> epsilon_step();
 		std::set<NFAState *> step(char c);
+
+		// The attatched source reader. 
+		// A source reader is created for each file to read. 
+		SourceReader *sr;
 	
 	public:
 		NonDeterministicFA();
@@ -111,6 +116,12 @@ class NonDeterministicFA {
 
 		std::string state_set_to_string(std::set<NFAState *> &s);
 		DeterministicFA convert_to_dfa();
+
+		// we want to run this nfa multiple times. 
+		// we also want to attatch it to a source reader. 
+		// we want to be able to attatch it to different readers, 
+		// and maintain the same nfa. 
+		void set_source_reader(SourceReader *sr_p);
 };
 
 

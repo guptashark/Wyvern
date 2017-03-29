@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <list>
 
 #include "deterministicfa.h"
 #include "source_reader.h"
@@ -92,6 +93,7 @@ class NonDeterministicFA {
 
 		std::set<NFAState *> epsilon_step();
 		std::set<NFAState *> step(char c);
+		std::map<std::string, NFAState *> named_states;
 
 		// The attatched source reader. 
 		// A source reader is created for each file to read. 
@@ -99,12 +101,23 @@ class NonDeterministicFA {
 	
 	public:
 		NonDeterministicFA();
+
+		// a temporary constructor, to help initiate the idea 
+		// of generating an NFA vs hard coding the states. 
+		// TODO
+		// improve this to work with regex, and work with Lex like syntax. 
+		NonDeterministicFA(std::list<std::string> keywords);
+
 		void add_state(std::string name);
 		void add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id);
+		void add_transition(std::string from_state_name, char symbol, std::string to_state_name);
+
 		void add_epsilon_transition(unsigned int from_state_id, unsigned int to_state_id);
+		void add_epsilon_transition(std::string from_state_name, std::string to_state_name);
 		void set_start(unsigned int state_id);
 
 		void set_final(unsigned int state_id);
+		void set_final(std::string state_name);
 
 		// right now it returns void, 
 		// but will print out whatever is necessary to indicate what happens. 

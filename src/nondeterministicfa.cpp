@@ -1,4 +1,5 @@
 #include <stack> 
+#include <utility>
 #include <iostream>
 #include <list> 
 #include <sstream>
@@ -56,6 +57,38 @@ void NFAState::print_identifiers() {
 }
 
 NonDeterministicFA::NonDeterministicFA(): num_states(0), start(NULL), sr(NULL) {}
+
+NonDeterministicFA::NonDeterministicFA(list<string> los): num_states(0), start(NULL), sr(NULL) {
+
+	// make the start state. 
+	add_state("start");
+	set_start(0);
+	for(auto i = los.begin(); i != los.end(); i++) {
+		string s(*i);
+		int current_len = 0;
+		int len = s.size();
+		string s_name(s);
+		s_name.push_back('-');
+		add_state(s_name);
+		add_epsilon_transition("start", s_name);
+		for(auto j = s.begin(); j != s.end(); j++) {
+			string next_state = s_name;
+			next_state.push_back(*j);
+			add_state(next_state);
+			add_transition(s_name, *j, next_state);
+			s_name.push_back(*j);
+			current_len++;
+			if(current_len == len) {
+				set_final(next_state);
+			}
+		}
+
+	}
+}
+
+void NonDeterministicFA::add_epsilon_transition(std::string from_state_name, std::string to_state_name) {
+	named_states[from_state_name]->add_epsilon_transition(named_states[to_state_name]);
+}
 
 void NonDeterministicFA::set_source_reader(SourceReader *sr_p) {
 	sr = sr_p;
@@ -183,10 +216,16 @@ void NonDeterministicFA::add_state(string state_name = string()) {
 		to_add = new NFAState(num_states);
 	} else {
 		to_add = new NFAState(state_name, num_states);
+		pair<string, NFAState *> to_insert;
+		named_states.insert(to_insert);
 	}
 
 	states.push_back(to_add);
 	num_states++;
+}
+
+void NonDeterministicFA::add_transition(string from_state_name, char symbol, string to_state_name) {
+	named_states[from_state_name]->add_transition(symbol, named_states[to_state_name]);
 }
 
 void NonDeterministicFA::add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id) {
@@ -212,6 +251,10 @@ void NonDeterministicFA::set_final(unsigned int state_id) {
 	states[state_id]->set_as_final();	
 //	std::pair<unsigned int, bool> to_set(state_id, true);
 //	final_states.insert(to_set);
+}
+
+void NonDeterministicFA::set_final(string state_name) {
+	named_states[state_name]->set_as_final();
 }
 
 string NonDeterministicFA::state_set_to_string(set<NFAState *> &s) {

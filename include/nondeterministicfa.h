@@ -106,7 +106,7 @@ class NonDeterministicFA {
 		// of generating an NFA vs hard coding the states. 
 		// TODO
 		// improve this to work with regex, and work with Lex like syntax. 
-		NonDeterministicFA(std::list<std::string> keywords);
+		NonDeterministicFA(std::list<std::string> los);
 
 		void add_state(std::string name);
 		void add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id);

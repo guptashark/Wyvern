@@ -70,11 +70,13 @@ NonDeterministicFA::NonDeterministicFA(list<string> los): num_states(0), start(N
 		string s_name(s);
 		s_name.push_back('-');
 		add_state(s_name);
+		cout << "Adding state: " << s_name << endl;
 		add_epsilon_transition("start", s_name);
 		for(auto j = s.begin(); j != s.end(); j++) {
 			string next_state = s_name;
 			next_state.push_back(*j);
 			add_state(next_state);
+			cout << "Adding state: " << next_state << endl;
 			add_transition(s_name, *j, next_state);
 			s_name.push_back(*j);
 			current_len++;
@@ -216,7 +218,7 @@ void NonDeterministicFA::add_state(string state_name = string()) {
 		to_add = new NFAState(num_states);
 	} else {
 		to_add = new NFAState(state_name, num_states);
-		pair<string, NFAState *> to_insert;
+		pair<string, NFAState *> to_insert(state_name, to_add);
 		named_states.insert(to_insert);
 	}
 

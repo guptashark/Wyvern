@@ -16,8 +16,18 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
 
-	SourceReader sr("../cfg_files/test.wvn");
+	SourceReader sr("../cfg_files/test2.wvn");
+	list<string> los;
+	los.push_back("for");
+	los.push_back("else");
+	los.push_back("int");
+	los.push_back("char");
+	los.push_back("using");
+	los.push_back("return");
 
+	NonDeterministicFA nfa(los);
+
+/*	
 	NonDeterministicFA nfa;
 
 	nfa.add_state("start"); // 0
@@ -46,11 +56,11 @@ int main(int argc, char *argv[]) {
 	nfa.set_start(0);
 	nfa.set_final(9);
 	nfa.set_final(4);
-
+*/
 	nfa.set_source_reader(&sr);
 
 	nfa.compute_epsilon_closures();
-	nfa.print_info();
+//	nfa.print_info();
 
 	nfa.run();
 	nfa.run();

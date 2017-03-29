@@ -56,9 +56,9 @@ void NFAState::print_identifiers() {
 	}
 }
 
-NonDeterministicFA::NonDeterministicFA(): num_states(0), start(NULL), sr(NULL) {}
+NonDeterministicFA::NonDeterministicFA(): start(NULL), sr(NULL) {}
 
-NonDeterministicFA::NonDeterministicFA(list<string> los): num_states(0), start(NULL), sr(NULL) {
+NonDeterministicFA::NonDeterministicFA(list<string> los): start(NULL), sr(NULL) {
 
 	// make the start state. 
 	add_state("start");
@@ -215,15 +215,14 @@ void NonDeterministicFA::add_state(string state_name = string()) {
 	NFAState *to_add = NULL;
 
 	if(state_name.empty()) {
-		to_add = new NFAState(num_states);
+		to_add = new NFAState(states.size());
 	} else {
-		to_add = new NFAState(state_name, num_states);
+		to_add = new NFAState(state_name, states.size());
 		pair<string, NFAState *> to_insert(state_name, to_add);
 		named_states.insert(to_insert);
 	}
 
 	states.push_back(to_add);
-	num_states++;
 }
 
 void NonDeterministicFA::add_transition(string from_state_name, string symbols, string to_state_name) {

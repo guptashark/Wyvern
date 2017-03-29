@@ -3,22 +3,19 @@
 
 using namespace std;
 
-SourceReader::SourceReader(string src_file): stored_str("fora") {
+SourceReader::SourceReader(string src_file) {
 
-	cout << "Constructor called with src file: ";
-	cout << src_file;
-	cout << endl;
-	it = stored_str.begin();
+	// open the source file. 
+	source.open(src_file);	
+
 }
 
 char SourceReader::next_char() {
-	if(it == stored_str.end()) {
-		return EOF;
-	}
+	return source.get();
+}
 
-	char ret = *it;
-	it++;
-	return ret;
+void SourceReader::rewind_input() {
+	source.unget();
 }
 	
 

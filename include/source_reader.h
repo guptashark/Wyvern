@@ -7,14 +7,12 @@
 class SourceReader { 
 
 	private:
-		std::fstream source;
-		std::string stored_str;
-		std::string::iterator it;
-
+		std::ifstream source;
 
 	public:
 		SourceReader(std::string src_file);
 		char next_char();
+		void rewind_input();
 };
 
 #endif

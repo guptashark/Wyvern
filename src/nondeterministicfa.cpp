@@ -353,6 +353,11 @@ void NonDeterministicFA::run() {
 			
 			visited_states.pop();
 			seen_string.pop_back();
+			// if we have a source reader
+			if(sr != NULL) {
+				sr->rewind_input();
+			}
+
 		} else {
 			accepter_found = true;
 		}

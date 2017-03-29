@@ -16,7 +16,7 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
 
-	SourceReader sr("../cfg_files/test2.wvn");
+	SourceReader sr("../cfg_files/test3.wvn");
 	list<string> los;
 	los.push_back("for");
 	los.push_back("else");
@@ -26,6 +26,23 @@ int main(int argc, char *argv[]) {
 	los.push_back("return");
 
 	NonDeterministicFA nfa(los);
+	// add in basic identifiers
+	nfa.add_state("identifier-begin");
+	nfa.add_epsilon_transition("start", "identifier-begin");
+	nfa.add_state("identifier-end");
+
+	string lower = "abcdefghijklmnopqrstuvwxyz";
+
+	nfa.add_transition("identifier-begin", lower, "identifier-end");
+	nfa.add_transition("identifier-end", lower, "identifier-end");
+	nfa.set_final("identifier-end");
+
+	// need this as a delimiter
+	nfa.add_state("ws-begin");
+	nfa.add_state("ws-end");
+	nfa.add_epsilon_transition("start", "ws-begin");
+	nfa.add_transition("ws-begin", '\n', "ws-end");
+	nfa.set_final("ws-end");
 
 /*	
 	NonDeterministicFA nfa;
@@ -62,6 +79,8 @@ int main(int argc, char *argv[]) {
 	nfa.compute_epsilon_closures();
 //	nfa.print_info();
 
+	nfa.run();
+	nfa.run();
 	nfa.run();
 	nfa.run();
 	nfa.run();

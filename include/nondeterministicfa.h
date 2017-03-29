@@ -111,6 +111,7 @@ class NonDeterministicFA {
 		void add_state(std::string name);
 		void add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id);
 		void add_transition(std::string from_state_name, char symbol, std::string to_state_name);
+		void add_transition(std::string from_state_name, std::string symbols, std::string to_state_name);
 
 		void add_epsilon_transition(unsigned int from_state_id, unsigned int to_state_id);
 		void add_epsilon_transition(std::string from_state_name, std::string to_state_name);

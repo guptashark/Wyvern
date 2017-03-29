@@ -226,6 +226,10 @@ void NonDeterministicFA::add_state(string state_name = string()) {
 	num_states++;
 }
 
+void NonDeterministicFA::add_transition(string from_state_name, string symbols, string to_state_name) {
+	named_states[from_state_name]->add_transition(symbols, named_states[to_state_name]);
+}
+
 void NonDeterministicFA::add_transition(string from_state_name, char symbol, string to_state_name) {
 	named_states[from_state_name]->add_transition(symbol, named_states[to_state_name]);
 }

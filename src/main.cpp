@@ -10,11 +10,14 @@
 #include "parsetree.h"
 #include "deterministicfa.h"
 #include "nondeterministicfa.h"
+#include "source_reader.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
 
+	SourceReader("test.wvn");
+/*
 	NonDeterministicFA nfa;
 
 	nfa.add_state("start"); // 0
@@ -43,11 +46,11 @@ int main(int argc, char *argv[]) {
 	nfa.set_start(0);
 	nfa.set_final(9);
 	nfa.set_final(4);
+*/
+	//nfa.compute_epsilon_closures();
+	//nfa.print_info();
 
-	nfa.compute_epsilon_closures();
-	nfa.print_info();
-
-	nfa.run();
+	//nfa.run();
 	//nfa.convert_to_dfa();
 
 	return 0;

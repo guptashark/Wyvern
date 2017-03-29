@@ -6,7 +6,7 @@ LINKFLAGS = /nologo
 all: bin/wyvern.exe
 
 
-bin/wyvern.exe: obj/main.obj "obj/lexer.obj" "obj/parser.obj" "obj/deterministicfa.obj" "obj/nondeterministicfa.obj" "obj/parsetree.obj" "obj/source_reader.obj" "obj/token.obj"
+bin/wyvern.exe: obj/main.obj "obj/lexer.obj" "obj/parser.obj" "obj/deterministicfa.obj" "obj/nondeterministicfa.obj" "obj/parsetree.obj" "obj/source_reader.obj" "obj/token.obj" "obj/symbol_table.obj"
 	@LINK /OUT:bin/wyvern.exe $(LINKFLAGS) $** 
 
 obj/main.obj: src/main.cpp
@@ -33,6 +33,9 @@ obj/source_reader.obj: "src/source_reader.cpp"
 obj/token.obj: "src/token.cpp"
 	@$(CC) $(CPPFLAGS) $**
 
+obj/symbol_table.obj: "src/symbol_table.cpp"
+	@$(CC) $(CPPFLAGS) $**
+
 clean:
 	del obj\main.obj
 	del obj\lexer.obj
@@ -42,6 +45,7 @@ clean:
 	del obj\parsetree.obj
 	del obj\source_reader.obj
 	del obj\token.obj
+	del obj\symbol_table.obj
 	del bin\wyvern.exe
 
 

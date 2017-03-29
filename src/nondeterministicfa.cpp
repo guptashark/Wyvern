@@ -318,19 +318,28 @@ void NonDeterministicFA::run() {
 	// Since we're now at the end...
 	// see how much we need to push back to get to an accepting state. 
 	bool accepter_found = false;
-/*
+	NFAState *acceptor = NULL;
 	while(!accepter_found) {
-		unsigned int top = visited_states.top();
-		auto iter = final_states.find(top);
-		if(iter == final_states.end()) {
-
+		// get the top set of states. 
+		std::set<NFAState *> top = visited_states.top();
+		// check if any of them are final states. 
+		bool contains_final_state = false;
+	
+		for(auto i = top.begin(); i != top.end(); i++) {
+			if((*i)->get_is_final()) {
+				contains_final_state = true;
+				acceptor = *i;
+			}
+		}
+		if(!contains_final_state) {
+			
 			visited_states.pop();
 			seen_string.pop_back();
 		} else {
 			accepter_found = true;
 		}
 	}
-*/
+
 	cout << "Fell off automaton" << endl;
 	cout << "The accepted string is: " << seen_string << endl;
 }

@@ -9,7 +9,7 @@
 #include "parser.h"
 #include "parsetree.h"
 #include "deterministicfa.h"
-#include "nondeterministicfa.h"
+#include "hardcodenfa.h"
 #include "source_reader.h"
 
 using namespace std;

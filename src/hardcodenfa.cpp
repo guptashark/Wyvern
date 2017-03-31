@@ -3,7 +3,7 @@
 #include <iostream>
 #include <list> 
 #include <sstream>
-#include "nondeterministicfa.h"
+#include "hardcodenfa.h"
 
 using namespace std;
 

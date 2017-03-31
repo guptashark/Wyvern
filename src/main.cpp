@@ -39,6 +39,7 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.add_state("id-end");
 		nfa.add_transition("id-mid", alphanum, "id-end");
 		nfa.set_final("id-end", "C_ID");
+		nfa.set_final("id-lead", "C_ID");
 	}
 
 	// we add in support for positive and negative integers
@@ -134,7 +135,8 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.add_transition("lsqbrace-begin", "[", "lsqbrace-end");
 		nfa.set_final("lsqbrace-end", "LSQBRACE");
 	}
-	
+
+	// add support for rsqbrace (])	
 	{
 		nfa.add_state("rsqbrace-begin");
 		nfa.add_epsilon_transition("start", "lsqbrace-begin");
@@ -142,6 +144,34 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.add_transition("rsqbrace-begin", "]", "rsqbrace-end");
 		nfa.set_final("rsqbrace-end", "RSQBRACE");
 	}
+
+	// add support for equal symbol
+
+	{
+		nfa.add_state("eq-begin");
+		nfa.add_epsilon_transition("start", "eq-begin");
+		nfa.add_state("eq-end");
+		nfa.add_transition("eq-begin", "=", "eq-end");
+		nfa.set_final("eq-end", "EQUAL");
+	}
+
+
+	// try adding in support for relational operators: 
+	{
+		nfa.add_state("relop-eq-begin");
+		nfa.add_state("relop-eq-mid");
+		nfa.add_state("relop-eq-end");
+		nfa.add_epsilon_transition("start", "relop-eq-begin");
+		nfa.add_transition("relop-eq-begin", "=", "relop-eq-mid");
+		nfa.add_transition("relop-eq-mid", "=", "relop-eq-end");
+		nfa.set_final("relop-eq-end", "RELOP_EQ");
+	}
+
+	// ==
+	// <=
+	// >=
+	// !=
+	// =
 
 	
 }

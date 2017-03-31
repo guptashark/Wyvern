@@ -63,6 +63,29 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.add_transition("ws-end", " \n\t", "ws-end");
 		nfa.set_final("ws-end", "WS");
 	}
+
+	// add support for lbrace.
+	{
+		nfa.add_state("lbrace-begin");
+		nfa.add_epsilon_transition("start", "lbrace-begin");
+		nfa.add_state("lbrace-end");
+		nfa.add_transition("lbrace-begin", "{", "lbrace-end");
+		nfa.set_final("lbrace-end", "LBRACE");
+	}
+
+	// add support for rbrace, 
+	{
+		nfa.add_state("rbrace-begin");
+		nfa.add_epsilon_transition("start", "rbrace-begin");
+		nfa.add_state("rbrace-end");
+		nfa.add_transition("rbrace-begin", "}", "rbrace-end");
+		nfa.set_final("rbrace-end", "RBRACE");
+	}
+	// lparen
+	// rparen
+	// period
+	// comma
+	
 }
 
 int main(int argc, char *argv[]) {

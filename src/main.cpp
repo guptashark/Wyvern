@@ -14,13 +14,38 @@
 
 using namespace std;
 
-HardCodeNFA *hardcoded_C_lexer(void) {
+void hardcoded_C_lexer(HardCodeNFA &nfa) {
+ 	string uppercase("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+	string lowercase("abcdefghijklmnopqrstuvwxyz");
+	string nonzero_digit("123456789");
+	string digit = nonzero_digit + "0";
+ 	string alphanum = digit + uppercase + lowercase;
+
+	nfa.add_state("start");
+	nfa.set_start(0);
+	// assume that the nfa is "fresh"
+	// our identifiers can't start with an underscore, 
+	// alphanumeric characters are fine. 
+	{
+		nfa.add_state("id-begin");
+		nfa.add_epsilon_transition("start", "id-begin");
+		nfa.add_state("id-lead");
+		nfa.add_transition("id-begin", uppercase + lowercase, "id-lead");
+		nfa.add_state("id-mid");
+		nfa.add_transition("id-lead", alphanum + "_", "id-mid");
+		nfa.add_transition("id-mid", alphanum + "_", "id-mid");
+		nfa.add_state("id-end");
+		nfa.add_transition("id-mid", alphanum, "id-end");
+		nfa.set_final("id-end", "C_ID");
+	}
+	
 
 }
 
 int main(int argc, char *argv[]) {
 
 	SourceReader sr("../cfg_files/test3.wvn");
+	/*
 	list<string> los;
 	los.push_back("for");
 	los.push_back("else");
@@ -61,6 +86,16 @@ int main(int argc, char *argv[]) {
 	nfa.run();
 }
 //	nfa.convert_to_dfa();
+ */
+	HardCodeNFA nfa;
+	hardcoded_C_lexer(nfa);
+	while(true) {
+		nfa.run();
+	}
+	
+	return 0;
+}
+
 
 /*
 	return 0;

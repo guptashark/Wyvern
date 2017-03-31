@@ -20,6 +20,7 @@ char SourceReader::next_char() {
 //	} else {
 	char c = source.get();
 	if(source.eof()) {
+		//cout << "Returning the null character" << endl;
 		return '\0';
 	} else {
 		return c;
@@ -29,7 +30,7 @@ char SourceReader::next_char() {
 // issues when working with this... 
 // source reader needs to store all of the characters we're getting... 
 void SourceReader::rewind_input() {
-		source.unget();
+	source.unget();
 }
 	
 

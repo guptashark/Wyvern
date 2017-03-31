@@ -386,6 +386,7 @@ string HardCodeNFA::run() {
 			c = sr->next_char();
 		}
 
+		
 		// now we need to do shenanigans.
 		// build a set of states we can get to from e-transitions
 		// if we can get from A to B with e-t, then 
@@ -435,7 +436,12 @@ string HardCodeNFA::run() {
 	}
 
 	if(acceptor == NULL) {
-		cout << "acceptor state is null..." << endl;
+		//cout << "acceptor state is null..." << endl;
+		// this is a really hacky fix.... 
+		// the problem is that for some reason, 
+		// we're not recognizing when we're at the end of input.
+		// gg
+		return "EOF";
 
 	}
 

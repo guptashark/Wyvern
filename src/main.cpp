@@ -98,10 +98,51 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.add_transition("rparen-begin", ")", "rparen-end");
 		nfa.set_final("rparen-end", "RPAREN");		
 	}
-	// lparen
-	// rparen
-	// period
-	// comma
+
+	// add support for period
+	{
+		nfa.add_state("period-begin");
+		nfa.add_epsilon_transition("start", "period-begin");
+		nfa.add_state("period-end");
+		nfa.add_transition("period-begin", ".", "period-end");
+		nfa.set_final("period-end", "PERIOD");
+	}
+
+	// add support for comma
+	{	
+		nfa.add_state("comma-begin");
+		nfa.add_epsilon_transition("start", "comma-begin");
+		nfa.add_state("comma-end");
+		nfa.add_transition("comma-begin", ",", "comma-end");
+		nfa.set_final("comma-end", "COMMA");
+	}
+
+	// add support for ampersand
+	{
+		nfa.add_state("amp-begin");
+		nfa.add_epsilon_transition("start", "amp-begin");
+		nfa.add_state("amp-end");
+		nfa.add_transition("amp-begin", "&", "amp-end");
+		nfa.set_final("amp-end", "AMPERSAND");
+	}
+
+	// add support for lsqbrace ([)
+	{
+		nfa.add_state("lsqbrace-begin");
+		nfa.add_epsilon_transition("start", "lsqbrace-begin");
+		nfa.add_state("lsqbrace-end");
+		nfa.add_transition("lsqbrace-begin", "[", "lsqbrace-end");
+		nfa.set_final("lsqbrace-end", "LSQBRACE");
+	}
+	
+	{
+		nfa.add_state("rsqbrace-begin");
+		nfa.add_epsilon_transition("start", "lsqbrace-begin");
+		nfa.add_state("rsqbrace-end");
+		nfa.add_transition("rsqbrace-begin", "]", "rsqbrace-end");
+		nfa.set_final("rsqbrace-end", "RSQBRACE");
+	}
+
 	
 }
 

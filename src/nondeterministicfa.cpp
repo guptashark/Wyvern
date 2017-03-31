@@ -65,9 +65,9 @@ void NFAState::print_identifiers() {
 	}
 }
 
-NonDeterministicFA::NonDeterministicFA(): start(NULL), sr(NULL) {}
+HardCodeNFA::HardCodeNFA(): start(NULL), sr(NULL) {}
 
-NonDeterministicFA::NonDeterministicFA(list<string> los): start(NULL), sr(NULL) {
+HardCodeNFA::HardCodeNFA(list<string> los): start(NULL), sr(NULL) {
 
 	// make the start state. 
 	add_state("start");
@@ -97,26 +97,33 @@ NonDeterministicFA::NonDeterministicFA(list<string> los): start(NULL), sr(NULL) 
 	}
 }
 
-void NonDeterministicFA::add_epsilon_transition(std::string from_state_name, std::string to_state_name) {
+HardCodeNFA::HardCodeNFA(HardCodeNFA nfa1, char operation, HardCodeNFA nfa2) {
+	
+	// just do the one for concatenation
+	// for each of the final states in nfa1, put an epsilon transition to the start state of nfa2. 	
+	
+}
+
+void HardCodeNFA::add_epsilon_transition(std::string from_state_name, std::string to_state_name) {
 	named_states[from_state_name]->add_epsilon_transition(named_states[to_state_name]);
 }
 
-void NonDeterministicFA::set_source_reader(SourceReader *sr_p) {
+void HardCodeNFA::set_source_reader(SourceReader *sr_p) {
 	sr = sr_p;
 }
 
-void NonDeterministicFA::compute_epsilon_closures() {
+void HardCodeNFA::compute_epsilon_closures() {
 
 	for(auto i = states.begin(); i != states.end(); i++) {
 		(*i)->get_eps_closure();
 	}
 }
 
-void NonDeterministicFA::add_epsilon_transition(unsigned int from_state_id, unsigned int to_state_id) {
+void HardCodeNFA::add_epsilon_transition(unsigned int from_state_id, unsigned int to_state_id) {
 	states[from_state_id]->add_epsilon_transition(states[to_state_id]);
 }
 
-void NonDeterministicFA::print_info() {
+void HardCodeNFA::print_info() {
 
 	for(auto it = states.begin(); it != states.end(); it++) {
 
@@ -219,7 +226,7 @@ set<NFAState *> NFAState::step(char symbol) {
 	}
 }
 
-void NonDeterministicFA::add_state(string state_name = string()) {
+void HardCodeNFA::add_state(string state_name = string()) {
 
 	NFAState *to_add = NULL;
 
@@ -234,19 +241,19 @@ void NonDeterministicFA::add_state(string state_name = string()) {
 	states.push_back(to_add);
 }
 
-void NonDeterministicFA::add_transition(string from_state_name, string symbols, string to_state_name) {
+void HardCodeNFA::add_transition(string from_state_name, string symbols, string to_state_name) {
 	named_states[from_state_name]->add_transition(symbols, named_states[to_state_name]);
 }
 
-void NonDeterministicFA::add_transition(string from_state_name, char symbol, string to_state_name) {
+void HardCodeNFA::add_transition(string from_state_name, char symbol, string to_state_name) {
 	named_states[from_state_name]->add_transition(symbol, named_states[to_state_name]);
 }
 
-void NonDeterministicFA::add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id) {
+void HardCodeNFA::add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id) {
 	states[from_state_id]->add_transition(symbol, states[to_state_id]);
 }
 
-void NonDeterministicFA::set_start(unsigned int state_id) {
+void HardCodeNFA::set_start(unsigned int state_id) {
 	// if the start has already been set, throw an error
 	// TODO actually throw the error. 
 	if(start == NULL) {
@@ -256,7 +263,7 @@ void NonDeterministicFA::set_start(unsigned int state_id) {
 	}
 }	
 
-void NonDeterministicFA::set_final(unsigned int state_id) {
+void HardCodeNFA::set_final(unsigned int state_id) {
 
 	// the unordered map seems like a bad implementation
 	// for checking if a state is final... 
@@ -267,15 +274,15 @@ void NonDeterministicFA::set_final(unsigned int state_id) {
 //	final_states.insert(to_set);
 }
 
-void NonDeterministicFA::set_final(string state_name) {
+void HardCodeNFA::set_final(string state_name) {
 	named_states[state_name]->set_as_final();
 }
 
-void NonDeterministicFA::set_final(string state_name, string arv) {
+void HardCodeNFA::set_final(string state_name, string arv) {
 	named_states[state_name]->set_as_final(arv);
 }
 
-string NonDeterministicFA::state_set_to_string(set<NFAState *> &s) {
+string HardCodeNFA::state_set_to_string(set<NFAState *> &s) {
 
 	// probably shouldn't even get here... 
 	if(s.empty()) {
@@ -309,7 +316,7 @@ string NonDeterministicFA::state_set_to_string(set<NFAState *> &s) {
 	return result;
 }
 
-DeterministicFA NonDeterministicFA::convert_to_dfa() {
+DeterministicFA HardCodeNFA::convert_to_dfa() {
 	// create the dfa as we go. 
 	
 	// make the set of states that is the start set of the dfa. 
@@ -338,7 +345,7 @@ DeterministicFA NonDeterministicFA::convert_to_dfa() {
 // newish behavior
 // if attatched to a source reader, 
 // read from it instead of from stdin.
-void NonDeterministicFA::run() {
+void HardCodeNFA::run() {
 	std::set<NFAState *> current;
 	current.insert(start);
 	std::string seen_string;

@@ -91,7 +91,7 @@ class NFAState {
 };
 
 
-class NonDeterministicFA {
+class HardCodeNFA {
 
 	// vector of pointers to states. 
 	// should probably allow creation from NFA... 
@@ -119,13 +119,16 @@ class NonDeterministicFA {
 
 		
 	public:
-		NonDeterministicFA();
+		HardCodeNFA();
 
 		// a temporary constructor, to help initiate the idea 
 		// of generating an NFA vs hard coding the states. 
 		// TODO
 		// improve this to work with regex, and work with Lex like syntax. 
-		NonDeterministicFA(std::list<std::string> los);
+		HardCodeNFA(std::list<std::string> los);
+
+		HardCodeNFA(HardCodeNFA nfa1, char operation, HardCodeNFA nfa2);
+		HardCodeNFA(HardCodeNFA nfa, char closure);
 
 		void add_state(std::string name);
 		void add_transition(unsigned int from_state_id, char symbol, unsigned int to_state_id);

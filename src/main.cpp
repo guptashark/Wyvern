@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 	los.push_back("using");
 	los.push_back("return");
 
-	NonDeterministicFA nfa(los);
+	HardCodeNFA nfa(los);
 	// add in basic identifiers
 	nfa.add_state("identifier-begin");
 	nfa.add_epsilon_transition("start", "identifier-begin");

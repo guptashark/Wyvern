@@ -345,16 +345,17 @@ DeterministicFA HardCodeNFA::convert_to_dfa() {
 // newish behavior
 // if attatched to a source reader, 
 // read from it instead of from stdin.
+
 void HardCodeNFA::run() {
 	std::set<NFAState *> current;
 	current.insert(start);
 	std::string seen_string;
 	std::stack<std::set<NFAState *>> visited_states;
 
-	cout << "Please start." << endl;
+	//cout << "Please start." << endl;
 	
 	while(!current.empty()) {
-		cout << "In states " ;
+		//cout << "In states " ;
 
 		std::set<NFAState *> X;
 		// build our epsilon closure of current. 
@@ -370,9 +371,9 @@ void HardCodeNFA::run() {
 		// get the eps_closures, X. 
 		
 		for(auto iter = X.begin(); iter != X.end(); iter++) {
-			cout << (*iter)->get_state_id() << " ";
+		//	cout << (*iter)->get_state_id() << " ";
 		}
-		cout << endl;
+		//cout << endl;
 
 		//visited_states.insert(current);
 

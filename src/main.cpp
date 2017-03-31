@@ -21,9 +21,11 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 	string digit = nonzero_digit + "0";
  	string alphanum = digit + uppercase + lowercase;
 
+	
+	// assume the nfa is empty, no states, nothing. 
+
 	nfa.add_state("start");
 	nfa.set_start(0);
-	// assume that the nfa is "fresh"
 	// our identifiers can't start with an underscore, 
 	// alphanumeric characters are fine. 
 	{
@@ -38,13 +40,34 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.add_transition("id-mid", alphanum, "id-end");
 		nfa.set_final("id-end", "C_ID");
 	}
-	
 
+	// we add in support for positive and negative integers
+	{
+		nfa.add_state("int-begin");
+		nfa.add_epsilon_transition("start", "int-begin");
+		nfa.add_state("int-lead");
+		nfa.add_state("int-neg_symbol");
+		nfa.add_transition("int-begin", "-", "int-neg_symbol");
+		nfa.add_transition("int-neg_symbol", nonzero_digit, "int-lead");
+		nfa.add_transition("int-begin", nonzero_digit, "int-lead");
+		nfa.add_transition("int-lead", digit, "int-lead");
+		nfa.set_final("int-lead", "C_INT");
+	}
+
+	// we add support for whitespace so that this works on a simple test file. 
+	{
+		nfa.add_state("ws-begin");
+		nfa.add_epsilon_transition("start", "ws-begin");
+		nfa.add_state("ws-end");
+		nfa.add_transition("ws-begin", " \n\t", "ws-end");
+		nfa.add_transition("ws-end", " \n\t", "ws-end");
+		nfa.set_final("ws-end", "WS");
+	}
 }
 
 int main(int argc, char *argv[]) {
 
-	SourceReader sr("../cfg_files/test3.wvn");
+	SourceReader sr("../cfg_files/c_identifiers");
 	/*
 	list<string> los;
 	los.push_back("for");
@@ -80,18 +103,21 @@ int main(int argc, char *argv[]) {
 //	nfa.print_info();
 
 	nfa.run();
-	nfa.run();
-	nfa.run();
-	nfa.run();
-	nfa.run();
-}
+	
 //	nfa.convert_to_dfa();
  */
+
+	
 	HardCodeNFA nfa;
 	hardcoded_C_lexer(nfa);
-	while(true) {
-		nfa.run();
-	}
+	nfa.set_source_reader(&sr);	
+
+	nfa.run();
+	nfa.run();
+	nfa.run();
+	nfa.run();
+	nfa.run();
+	nfa.run();
 	
 	return 0;
 }

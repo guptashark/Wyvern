@@ -150,7 +150,7 @@ class HardCodeNFA {
 		// in use, it should return something useful. 
 		void print_info();
 		void compute_epsilon_closures();
-		void run();
+		std::string run();
 
 		std::string state_set_to_string(std::set<NFAState *> &s);
 		DeterministicFA convert_to_dfa();

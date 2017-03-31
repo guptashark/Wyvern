@@ -346,7 +346,9 @@ DeterministicFA HardCodeNFA::convert_to_dfa() {
 // if attatched to a source reader, 
 // read from it instead of from stdin.
 
-void HardCodeNFA::run() {
+// TODO 
+// return a token, not just the token name
+string HardCodeNFA::run() {
 	std::set<NFAState *> current;
 	current.insert(start);
 	std::string seen_string;
@@ -439,4 +441,5 @@ void HardCodeNFA::run() {
 
 	cout << "token name: " << acceptor->get_arv() << endl;
 	cout << "lexeme: \"" << seen_string << "\"" << endl << endl;
+	return acceptor->get_arv();
 }

@@ -80,7 +80,7 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.add_state("space-begin");
 		nfa.add_epsilon_transition("start", "space-begin");
 		nfa.add_state("space-end");
-		nfa.add_transition("space-begin", " ", "space-end");
+		nfa.add_transition("space-begin", ' ', "space-end");
 		nfa.set_final("space-end", "SPACE");
 	}
 
@@ -214,17 +214,22 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.set_final("relop-gteq-end", "GTEQ");
 	}
 
-	// <=
-	// >=
-	// !=
-	// =
-
+	// recognize EOF?? 
+	{
+		nfa.add_state("EOF-begin");
+		nfa.add_state("EOF-end");
+		nfa.add_epsilon_transition("start", "EOF-begin");
+		nfa.add_transition("EOF-begin", '\0' ,"EOF-end");
+		nfa.set_final("EOF-end", "EOF");
+	}
+	
 	
 }
 
 int main(int argc, char *argv[]) {
 
 	SourceReader sr("../cfg_files/c_identifiers");
+	//SourceReader sr;
 	/*
 	list<string> los;
 	los.push_back("for");
@@ -269,12 +274,10 @@ int main(int argc, char *argv[]) {
 	hardcoded_C_lexer(nfa);
 	nfa.set_source_reader(&sr);	
 
-	nfa.run();
-	nfa.run();
-	nfa.run();
-	nfa.run();
-	nfa.run();
-	nfa.run();
+	string result;
+	while(result != "EOF") {
+		result = nfa.run();
+	}
 	
 	return 0;
 }

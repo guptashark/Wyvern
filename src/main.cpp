@@ -14,6 +14,10 @@
 
 using namespace std;
 
+HardCodeNFA *hardcoded_C_lexer(void) {
+
+}
+
 int main(int argc, char *argv[]) {
 
 	SourceReader sr("../cfg_files/test3.wvn");

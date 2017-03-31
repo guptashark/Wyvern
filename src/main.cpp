@@ -55,14 +55,33 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.set_final("int-lead", "C_INT");
 	}
 
-	// we add support for whitespace so that this works on a simple test file. 
+	// we add support for newlines, (important for interpreter behavior)
+	// (splitting apart newlines and tabs and spaces. 
+	// important for pythonesque syntax
 	{
-		nfa.add_state("ws-begin");
-		nfa.add_epsilon_transition("start", "ws-begin");
-		nfa.add_state("ws-end");
-		nfa.add_transition("ws-begin", " \n\t", "ws-end");
-		nfa.add_transition("ws-end", " \n\t", "ws-end");
-		nfa.set_final("ws-end", "WS");
+		nfa.add_state("newline-begin");
+		nfa.add_epsilon_transition("start", "newline-begin");
+		nfa.add_state("newline-end");
+		nfa.add_transition("newline-begin", "\n", "newline-end");
+		nfa.set_final("newline-end", "NEWLINE");
+	}
+
+	// support for tabs
+	{
+		nfa.add_state("tab-begin");
+		nfa.add_epsilon_transition("start", "tab-begin");
+		nfa.add_state("tab-end");
+		nfa.add_transition("tab-begin", "\t", "tab-end");
+		nfa.set_final("tab-end", "TAB");
+	}
+
+	// support for spaces
+	{
+		nfa.add_state("space-begin");
+		nfa.add_epsilon_transition("start", "space-begin");
+		nfa.add_state("space-end");
+		nfa.add_transition("space-begin", " ", "space-end");
+		nfa.set_final("space-end", "SPACE");
 	}
 
 	// add support for lbrace.
@@ -156,7 +175,7 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 	}
 
 
-	// try adding in support for relational operators: 
+	// try adding in support for relational operator ==
 	{
 		nfa.add_state("relop-eq-begin");
 		nfa.add_state("relop-eq-mid");
@@ -167,7 +186,34 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.set_final("relop-eq-end", "RELOP_EQ");
 	}
 
-	// ==
+	// DOn't commit until we have the following done: 
+	// TODO			
+
+	// Recognize < and <=
+	{
+		nfa.add_state("relop-lt-begin");
+		nfa.add_state("relop-lt-end");
+		nfa.add_state("relop-lteq-end");
+		nfa.add_epsilon_transition("start", "relop-lt-begin");
+		nfa.add_transition("relop-lt-begin", "<", "relop-lt-end");
+		nfa.add_transition("relop-lt-end", "=", "relop-lteq-end");
+		nfa.set_final("relop-lt-end", "LT");
+		nfa.set_final("relop-lteq-end", "LTEQ");
+
+	}	
+
+	// recognize > and >=
+	{
+		nfa.add_state("relop-gt-begin");
+		nfa.add_state("relop-gt-end");
+		nfa.add_state("relop-gteq-end");
+		nfa.add_epsilon_transition("start", "relop-gt-begin");
+		nfa.add_transition("relop-gt-begin", ">", "relop-gt-end");
+		nfa.add_transition("relop-gt-end", "=", "relop-gteq-end");
+		nfa.set_final("relop-gt-end", "GT");
+		nfa.set_final("relop-gteq-end", "GTEQ");
+	}
+
 	// <=
 	// >=
 	// !=

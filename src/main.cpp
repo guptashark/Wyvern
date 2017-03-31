@@ -81,6 +81,23 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.add_transition("rbrace-begin", "}", "rbrace-end");
 		nfa.set_final("rbrace-end", "RBRACE");
 	}
+
+	{
+		nfa.add_state("lparen-begin");
+		nfa.add_epsilon_transition("start", "lparen-begin");
+		nfa.add_state("lparen-end");
+		nfa.add_transition("lparen-begin", "(", "lparen-end");
+		nfa.set_final("lparen-end", "LPAREN");		
+	}
+
+	// add support for lparen
+	{
+		nfa.add_state("rparen-begin");
+		nfa.add_epsilon_transition("start", "rparen-begin");
+		nfa.add_state("rparen-end");
+		nfa.add_transition("rparen-begin", ")", "rparen-end");
+		nfa.set_final("rparen-end", "RPAREN");		
+	}
 	// lparen
 	// rparen
 	// period

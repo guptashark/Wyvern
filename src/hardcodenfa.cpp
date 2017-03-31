@@ -437,6 +437,6 @@ void HardCodeNFA::run() {
 
 	}
 
-	cout << "The token name is: " << acceptor->get_arv() << endl;
-	cout << "The accepted string is: \"" << seen_string << "\"" << endl;
+	cout << "token name: " << acceptor->get_arv() << endl;
+	cout << "lexeme: \"" << seen_string << "\"" << endl << endl;
 }

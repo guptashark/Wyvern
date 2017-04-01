@@ -321,9 +321,11 @@ int main(int argc, char *argv[]) {
 	hardcoded_C_lexer(nfa);
 	nfa.set_source_reader(&sr);	
 
-	string result;
-	while(result != "EOF") {
+	std::pair<string, string> result;
+	while(result.first != "EOF") {
 		result = nfa.run();
+		cout << result.first << ": ";
+		cout << result.second << endl;
 	}
 	
 	return 0;

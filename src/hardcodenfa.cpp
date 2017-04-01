@@ -348,7 +348,7 @@ DeterministicFA HardCodeNFA::convert_to_dfa() {
 
 // TODO 
 // return a token, not just the token name
-string HardCodeNFA::run() {
+pair<string, string> HardCodeNFA::run() {
 	std::set<NFAState *> current;
 	current.insert(start);
 	std::string seen_string;
@@ -441,11 +441,11 @@ string HardCodeNFA::run() {
 		// the problem is that for some reason, 
 		// we're not recognizing when we're at the end of input.
 		// gg
-		return "EOF";
+		pair<string, string> ret("EOF", "");
+		return ret; 
 
 	}
 
-	cout << "token name: " << acceptor->get_arv() << endl;
-	cout << "lexeme: \"" << seen_string << "\"" << endl << endl;
-	return acceptor->get_arv();
+	pair<string, string> ret(acceptor->get_arv(), seen_string);
+	return ret;
 }

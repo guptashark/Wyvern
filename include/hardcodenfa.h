@@ -10,6 +10,7 @@
 #include "deterministicfa.h"
 #include "source_reader.h"
 
+
 class NFAState {
 	// function to call if we finish in this state. 
 	//
@@ -150,7 +151,7 @@ class HardCodeNFA {
 		// in use, it should return something useful. 
 		void print_info();
 		void compute_epsilon_closures();
-		std::string run();
+		std::pair<std::string, std::string> run();
 
 		std::string state_set_to_string(std::set<NFAState *> &s);
 		DeterministicFA convert_to_dfa();

@@ -45,6 +45,7 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 	// we add in support for positive and negative integers
 	{
 		nfa.add_state("int-begin");
+		nfa.add_state("int-zero");
 		nfa.add_epsilon_transition("start", "int-begin");
 		nfa.add_state("int-lead");
 		nfa.add_state("int-neg_symbol");
@@ -52,6 +53,8 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.add_transition("int-neg_symbol", nonzero_digit, "int-lead");
 		nfa.add_transition("int-begin", nonzero_digit, "int-lead");
 		nfa.add_transition("int-lead", digit, "int-lead");
+		nfa.add_transition("int-begin", '0', "int-zero");
+		nfa.set_final("int-zero", "C_INT");
 		nfa.set_final("int-lead", "C_INT");
 	}
 

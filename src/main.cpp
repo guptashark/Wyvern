@@ -214,6 +214,50 @@ void hardcoded_C_lexer(HardCodeNFA &nfa) {
 		nfa.set_final("relop-gteq-end", "GTEQ");
 	}
 
+	// recognize semicolon
+	{
+		nfa.add_state("semicolon-begin");
+		nfa.add_state("semicolon-end");
+		nfa.add_epsilon_transition("start", "semicolon-begin");
+		nfa.add_transition("semicolon-begin", ";", "semicolon-end");
+		nfa.set_final("semicolon-end", "SEMICOLON");
+	}
+
+	// recognize colon
+	{
+		nfa.add_state("colon-begin");
+		nfa.add_state("colon-end");
+		nfa.add_epsilon_transition("start", "colon-begin");
+		nfa.add_transition("colon-begin", ":", "colon-end");
+		nfa.set_final("colon-end", "COLON");
+	}
+
+	// recognize strings with escaped quotes
+	// just build the string of possible chars we can have in a literal
+	string all_printable;
+	for(char c = 32; c < 126; c++) {
+		if(c != '"' && c != '\\') all_printable.push_back(c);
+		
+	}
+
+	{
+		nfa.add_state("strlit-begin");
+		nfa.add_state("strlit-lead-dq");
+		nfa.add_state("strlit-mid");
+		nfa.add_state("strlit-end");
+		nfa.add_state("strlit-esc");
+		nfa.add_state("strlit-esc-dq");
+		
+		nfa.add_epsilon_transition("start", "strlit-begin");
+		nfa.add_transition("strlit-begin", "\"", "strlit-mid");
+		nfa.add_transition("strlit-mid", all_printable, "strlit-mid");
+		nfa.add_transition("strlit-mid", "\"", "strlit-end");
+		nfa.set_final("strlit-end", "STRING_LITERAL");
+		
+	}
+
+
+	// This part clearly doesn't work. 
 	// recognize EOF?? 
 	{
 		nfa.add_state("EOF-begin");
